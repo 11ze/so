@@ -5,7 +5,7 @@
 ## 步骤
 
 - 打开：<https://dash.cloudflare.com>
-- 部署到 Cloudflare Workers 拿到访问地址
+- 部署到 Cloudflare Workers 拿到访问地址（src 的脚本都要用）
 - 修改 config.js 再部署一次
 
 ## Workers 部署说明

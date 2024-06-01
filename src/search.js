@@ -38,7 +38,7 @@ export default {
       <body>
       <div class="container">
           <h1>11ze</h1>
-          <form id="searchForm" action="{{base}}" method="GET">
+          <form id="searchForm" action="/" method="GET">
               <input type="text" id="searchInput" name="query" placeholder="输入搜索内容并按回车">
           </form>
       </div>
