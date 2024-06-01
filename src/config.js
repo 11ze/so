@@ -1,4 +1,8 @@
 export default {
+  get title() {
+    return '11ze';
+  },
+
   get base() {
     return 'https://so.wangze.tech?q=';
   },

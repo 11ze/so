@@ -7,7 +7,7 @@ export default {
     <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>11ze</title>
+    <title>{{title}}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -49,6 +49,7 @@ export default {
 
         input[type="text"] {
           width: 100%;
+          height: 30px;
           padding: 10px;
           border: 1px solid #ccc;
           border-radius: 5px;
@@ -82,6 +83,7 @@ export default {
     </html>
     `;
 
+    let title = config.title;
     const base = config.base;
     const resourceList = config.urls;
 
@@ -97,8 +99,9 @@ export default {
         const finalUrl = resource.url.replace('%s', encodeSearchText);
         liList.push(`<li><a href="${finalUrl}">${resource.name}</a></li>`);
       }
+      title += ' - ' + searchText;
     }
 
-    return html.replace('{{li_list}}', liList.join('\n'));
+    return html.replace('{{title}}', title).replace('{{li_list}}', liList.join('\n'));
   },
 };
