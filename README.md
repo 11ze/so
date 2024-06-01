@@ -5,12 +5,10 @@
 ## 步骤
 
 - 打开：<https://dash.cloudflare.com>
-- 部署到 Cloudflare Workers
-- 部署完成后
-  - 修改 search.js 的跳转地址
-  - 修改 worker.js 的地址列表为自己需要的地址
+- 部署到 Cloudflare Workers 拿到访问地址
+- 修改 config.js 再部署一次
 
-## Workers 操作说明
+## Workers 部署说明
 
 ![image.png](./images/1.png)
 

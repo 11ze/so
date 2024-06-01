@@ -1,6 +1,7 @@
+import config from './config.js';
 
 export default {
-  async fetch(request, env, ctx) {
+  fetch() {
     const html = `<!DOCTYPE html>
       <html lang="en">
       <head>
@@ -37,7 +38,7 @@ export default {
       <body>
       <div class="container">
           <h1>11ze</h1>
-          <form id="searchForm" action="https://www.example.com/search" method="GET">
+          <form id="searchForm" action="{{base}}" method="GET">
               <input type="text" id="searchInput" name="query" placeholder="输入搜索内容并按回车">
           </form>
       </div>
@@ -47,7 +48,7 @@ export default {
               if (e.key === "Enter") {
                   e.preventDefault(); // 阻止默认提交行为
                   var query = document.getElementById("searchInput").value;
-                  var url = "https://so.wangzecn.workers.dev?q=" + query;
+                  var url = "{{base}}" + query;
                   window.location.href = url; // 跳转到搜索结果页面
               }
           });
@@ -56,10 +57,7 @@ export default {
       </html>
   `;
 
-  return new Response(html, {
-    headers: {
-      'content-type': 'text/html;charset=UTF-8',
-    },
-  });
-},
+    const base = config.base;
+    return html.replace('{{base}}', base);
+  },
 };

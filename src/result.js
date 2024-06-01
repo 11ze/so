@@ -1,17 +1,7 @@
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run "npm run dev" in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run "npm run deploy" to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
-
-import search from './search.js';
+import config from './config.js';
 
 export default {
-  async fetch(request, env, ctx) {
+  fetch(searchText) {
     const indexHtml = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -69,39 +59,7 @@ export default {
     </html>
     `;
 
-    const url = new URL(request.url);
-    const searchText = url.searchParams.get('q');
-
-    if (!searchText) {
-      return search.fetch(request, env, ctx);
-    }
-
-    const resourceList = [
-      {
-        name: 'AGE 动漫',
-        url: 'https://www.agedm.org/search?query=%s',
-      },
-      {
-        name: '小雅',
-        url: 'http://localhost:9060/search?box=%s&url=&type=video',
-      },
-      {
-        name: '懒盘搜索',
-        url: 'https://www.lzpanx.com/search?exact=false&page=1&share_time=&type=&user=&q=%s',
-      },
-      {
-        name: '豆瓣',
-        url: 'https://www.douban.com/search?q=%s',
-      },
-      {
-        name: '小红书',
-        url: 'https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed',
-      },
-      {
-        name: '哔哩哔哩',
-        url: 'https://search.bilibili.com/all?keyword=%s',
-      },
-    ];
+    const resourceList = config.urls;
 
     const encodeSearchText = encodeURIComponent(searchText);
 
@@ -113,10 +71,6 @@ export default {
 
     const html = indexHtml.replace('{{keyword}}', searchText).replace('{{li_list}}', liList.join('\n'));
 
-    return new Response(html, {
-      headers: {
-        'content-type': 'text/html;charset=UTF-8',
-      },
-    });
+    return html;
   },
 };
