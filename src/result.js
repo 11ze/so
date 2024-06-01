@@ -85,16 +85,20 @@ export default {
     const base = config.base;
     const resourceList = config.urls;
 
+    const keyword = searchText || '';
+
+    let html = indexHtml.replace('{{base}}', base).replace('{{keyword}}', keyword);
+
     const encodeSearchText = encodeURIComponent(searchText);
 
     const liList = [];
-    for (const resource of resourceList) {
-      const finalUrl = resource.url.replace('%s', encodeSearchText);
-      liList.push(`<li><a href="${finalUrl}">${resource.name}</a></li>`);
+    if (searchText) {
+      for (const resource of resourceList) {
+        const finalUrl = resource.url.replace('%s', encodeSearchText);
+        liList.push(`<li><a href="${finalUrl}">${resource.name}</a></li>`);
+      }
     }
 
-    const html = indexHtml.replace('{{base}}', base).replace('{{keyword}}', searchText).replace('{{li_list}}', liList.join('\n'));
-
-    return html;
+    return html.replace('{{li_list}}', liList.join('\n'));
   },
 };

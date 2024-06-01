@@ -8,7 +8,6 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-import search from './search.js';
 import result from './result.js';
 
 export default {
@@ -16,13 +15,7 @@ export default {
     const url = new URL(request.url);
     const searchText = url.searchParams.get('q');
 
-    let html = '';
-
-    if (!searchText) {
-      html = search.fetch();
-    } else {
-      html = result.fetch(searchText);
-    }
+    const html = result.fetch(searchText);
 
     return new Response(html, {
       headers: {
