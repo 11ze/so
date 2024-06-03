@@ -9,55 +9,53 @@ export default {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #ffffff; /* 白色背景 */
-            color: #333; /* 主要文本颜色 */
-            margin: 0;
-            padding: 0;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #ffffff; /* 白色背景 */
+        color: #333; /* 主要文本颜色 */
+        margin: 0;
+        padding: 0;
+      }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
 
-        h1 {
-            color: #333; /* 标题颜色 */
-        }
+      .button-container {
+        display: grid;
+        grid-template-columns: repeat(6, 120px); /* 列数和宽度 */
+        grid-gap: 8px; /* 按钮间距 */
+      }
 
-        ul {
-            list-style-type: none; /* 移除列表默认样式 */
-            padding: 0;
-        }
+      .button {
+        padding: 6px;
+        text-align: center;
+        background-color: #f0f8ff; /* 淡蓝色背景 */
+        border-radius: 5px;
+        cursor: pointer; /* 鼠标悬停时显示手型光标 */
+        transition: background-color 0.3s; /* 添加过渡效果 */
+      }
 
-        li {
-            background-color: #f0f8ff; /* 淡蓝色背景 */
-            margin-bottom: 8px;
-            padding: 0;
-            border-radius: 5px;
-            cursor: pointer; /* 鼠标悬停时显示手型光标 */
-        }
-
-        li:hover {
+      .button:hover {
           background-color: #add8e6; /* 悬停时的背景颜色变化 */
-        }
+      }
 
-        a {
-            text-decoration: none; /* 移除链接下划线 */
-            color: #333; /* 链接文本颜色 */
-            display: block; /* 将链接元素设置为块级元素，使其占据整个列表项空间 */
-            padding: 10px; /* 为链接添加内边距，使整个列表项可点击 */
-        }
+      a {
+          text-decoration: none; /* 移除链接下划线 */
+          color: #333; /* 链接文本颜色 */
+          display: block; /* 将链接元素设置为块级元素，使其占据整个列表项空间 */
+          padding: 10px; /* 为链接添加内边距，使整个列表项可点击 */
+      }
 
-        input[type="text"] {
-          width: 100%;
-          height: 30px;
-          padding: 10px;
-          border: 1px solid #ccc;
-          border-radius: 5px;
-        }
+      input[type="text"] {
+        width: 100%;
+        height: 30px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
     </style>
     </head>
     <body>
@@ -68,9 +66,9 @@ export default {
               <input type="text" id="searchInput" name="query" placeholder="输入搜索内容并按回车" value="{{keyword}}"/>
             </form>
         </h1>
-        <ul>
-            {{li_list}}
-        </ul>
+        <div class="button-container">
+            {{button_list}}
+        </div>
     </div>
 
     <script>
@@ -97,15 +95,15 @@ export default {
 
     const encodeSearchText = encodeURIComponent(searchText);
 
-    const liList = [];
+    const buttonList = [];
     if (searchText) {
       for (const resource of resourceList) {
         const finalUrl = resource.url.replace('%s', encodeSearchText);
-        liList.push(`<li><a href="${finalUrl}">${resource.name}</a></li>`);
+        buttonList.push(`<div class="button"><a href="${finalUrl}">${resource.name}</a></div>`);
       }
       title += ' - ' + searchText;
     }
 
-    return html.replace('{{title}}', title).replace('{{li_list}}', liList.join('\n'));
+    return html.replace('{{title}}', title).replace('{{button_list}}', buttonList.join('\n'));
   },
 };
