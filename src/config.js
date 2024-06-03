@@ -35,7 +35,7 @@ export default {
       },
       {
         name: '搜狗',
-        url: 'https://www.sogou.com/web?query=%s',
+        url: 'https://www.sogou.com/web?query=%s&type=2&ie=utf8',
       },
       {
         name: 'Google',
