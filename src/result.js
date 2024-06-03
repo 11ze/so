@@ -34,10 +34,14 @@ export default {
 
         li {
             background-color: #f0f8ff; /* 淡蓝色背景 */
-            margin-bottom: 10px;
-            padding: 10px;
+            margin-bottom: 8px;
+            padding: 0;
             border-radius: 5px;
             cursor: pointer; /* 鼠标悬停时显示手型光标 */
+        }
+
+        li:hover {
+          background-color: #add8e6; /* 悬停时的背景颜色变化 */
         }
 
         a {

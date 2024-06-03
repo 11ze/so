@@ -10,8 +10,8 @@ export default {
   get urls() {
     return [
       {
-        name: 'AGE 动漫',
-        url: 'https://www.agedm.org/search?query=%s',
+        name: '豆瓣',
+        url: 'https://www.douban.com/search?q=%s',
       },
       {
         name: '小雅',
@@ -22,16 +22,44 @@ export default {
         url: 'https://www.lzpanx.com/search?exact=false&page=1&share_time=&type=&user=&q=%s',
       },
       {
-        name: '豆瓣',
-        url: 'https://www.douban.com/search?q=%s',
+        name: 'AGE 动漫',
+        url: 'https://www.agedm.org/search?query=%s',
+      },
+      {
+        name: '哔哩哔哩',
+        url: 'https://search.bilibili.com/all?keyword=%s',
       },
       {
         name: '小红书',
         url: 'https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed',
       },
       {
-        name: '哔哩哔哩',
-        url: 'https://search.bilibili.com/all?keyword=%s',
+        name: '搜狗',
+        url: 'https://www.sogou.com/web?query=%s',
+      },
+      {
+        name: 'Google',
+        url: 'https://www.google.com/search?q=%s',
+      },
+      {
+        name: 'Devv',
+        url: 'https://devv.ai/zh/search/%s',
+      },
+      {
+        name: 'DuckDuckGo',
+        url: 'https://duckduckgo.com/?q=%s',
+      },
+      {
+        name: 'YouTube',
+        url: 'https://www.youtube.com/results?search_query=%s&page={startPage?}&utm_source=opensearch',
+      },
+      {
+        name: 'Perplexity',
+        url: 'https://www.perplexity.ai/search?s=o&q=%s',
+      },
+      {
+        name: 'SOV2EX',
+        url: 'https://www.sov2ex.com/?q=%s&ref=opensearch',
       },
     ];
   },
