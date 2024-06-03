@@ -50,7 +50,7 @@ export default {
       }
 
       input[type="text"] {
-        width: 100%;
+        width: 92.3%;
         height: 30px;
         padding: 10px;
         border: 1px solid #ccc;
