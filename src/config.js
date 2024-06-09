@@ -18,12 +18,8 @@ export default {
         url: 'http://localhost:9060/search?box=%s&url=&type=video',
       },
       {
-        name: '懒盘搜索',
-        url: 'https://www.lzpanx.com/search?exact=false&page=1&share_time=&type=&user=&q=%s',
-      },
-      {
-        name: 'AGE 动漫',
-        url: 'https://www.agedm.org/search?query=%s',
+        name: "YouTube",
+        url: 'https://www.youtube.com/results?search_query=%s',
       },
       {
         name: '哔哩哔哩',
@@ -46,16 +42,24 @@ export default {
         url: 'https://duckduckgo.com/?q=%s',
       },
       {
-        name: 'Devv',
-        url: 'https://devv.ai/zh/search/%s',
-      },
-      {
         name: 'Perplexity',
         url: 'https://www.perplexity.ai/search?s=o&q=%s',
       },
       {
+        name: 'Devv',
+        url: 'https://devv.ai/zh/search/%s',
+      },
+      {
         name: 'SOV2EX',
         url: 'https://www.sov2ex.com/?q=%s&ref=opensearch',
+      },
+      {
+        name: 'AGE 动漫',
+        url: 'https://www.agedm.org/search?query=%s',
+      },
+      {
+        name: '懒盘搜索',
+        url: 'https://www.lzpanx.com/search?exact=false&page=1&share_time=&type=&user=&q=%s',
       },
     ];
   },

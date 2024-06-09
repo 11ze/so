@@ -25,7 +25,7 @@ export default {
 
       .button-container {
         display: grid;
-        grid-template-columns: repeat(6, 120px); /* 列数和宽度 */
+        grid-template-columns: repeat(5, 100px); /* 列数和宽度 */
         grid-gap: 8px; /* 按钮间距 */
       }
 
