@@ -25,12 +25,12 @@ export default {
 
       .button-container {
         display: grid;
-        grid-template-columns: repeat(5, 100px); /* 列数和宽度 */
+        grid-template-columns: repeat(4, 130px); /* 列数和宽度 */
         grid-gap: 8px; /* 按钮间距 */
       }
 
       .button {
-        padding: 6px;
+        padding: 0px;
         text-align: center;
         background-color: #f0f8ff; /* 淡蓝色背景 */
         border-radius: 5px;
