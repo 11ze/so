@@ -14,10 +14,6 @@ export default {
         url: 'https://www.douban.com/search?q=%s',
       },
       {
-        name: '小雅',
-        url: 'http://localhost:9060/search?box=%s&url=&type=video',
-      },
-      {
         name: 'AGE',
         url: 'https://www.agedm.org/search?query=%s',
       },
@@ -48,10 +44,6 @@ export default {
       {
         name: 'Google',
         url: 'https://www.google.com/search?q=%s',
-      },
-      {
-        name: 'Devv',
-        url: 'https://devv.ai/zh/search/%s',
       },
     ];
   },
