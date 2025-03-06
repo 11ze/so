@@ -34,16 +34,20 @@ export default {
         url: 'https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed',
       },
       {
-        name: 'SOV2EX',
-        url: 'https://www.sov2ex.com/?q=%s&ref=opensearch',
-      },
-      {
         name: '搜狗',
         url: 'https://www.sogou.com/web?query=%s&type=2&ie=utf8',
       },
       {
         name: 'Google',
         url: 'https://www.google.com/search?q=%s',
+      },
+      {
+        name: 'SOV2EX',
+        url: 'https://www.sov2ex.com/?q=%s&ref=opensearch',
+      },
+      {
+        name: 'Google V2EX',
+        url: 'https://www.google.com/search?q=site:v2ex.com/t%20%s',
       },
     ];
   },
