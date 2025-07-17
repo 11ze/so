@@ -49,6 +49,10 @@ export default {
         name: 'Google V2EX',
         url: 'https://www.google.com/search?q=site:v2ex.com/t%20%s',
       },
+      {
+        name: '腾讯视频',
+        url: 'https://v.qq.com/x/search/?q=%s&queryFrom=0',
+      },
     ];
   },
 };
