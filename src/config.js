@@ -10,7 +10,7 @@ export default {
   get urls() {
     return [
       {
-        name: '豆瓣',
+        name: '🏆 豆瓣',
         url: 'https://www.douban.com/search?q=%s',
       },
       {
@@ -18,7 +18,7 @@ export default {
         url: 'https://www.agedm.org/search?query=%s',
       },
       {
-        name: '樱花动漫',
+        name: '🌸 樱花动漫',
         url: 'https://yhdm.one/search?q=%s',
       },
       {
@@ -30,12 +30,16 @@ export default {
         url: 'https://search.bilibili.com/all?keyword=%s',
       },
       {
-        name: '小红书',
+        name: '🐧 腾讯视频',
+        url: 'https://v.qq.com/x/search/?q=%s',
+      },
+      {
+        name: '📕 小红书',
         url: 'https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed',
       },
       {
         name: '搜狗',
-        url: 'https://www.sogou.com/web?query=%s&type=2&ie=utf8',
+        url: 'https://www.sogou.com/web?query=%s',
       },
       {
         name: 'Google',
@@ -50,8 +54,12 @@ export default {
         url: 'https://www.google.com/search?q=site:v2ex.com/t%20%s',
       },
       {
-        name: '腾讯视频',
-        url: 'https://v.qq.com/x/search/?q=%s&queryFrom=0',
+        name: '百度',
+        url: 'https://www.baidu.com/s?wd=%s',
+      },
+      {
+        name: 'Bing',
+        url: 'https://www.bing.com/search?q=%s',
       },
     ];
   },
