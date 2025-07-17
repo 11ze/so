@@ -31,6 +31,9 @@ export default {
 
       .button {
         padding: 0px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         text-align: center;
         background-color: #f0f8ff; /* 淡蓝色背景 */
         border-radius: 5px;
