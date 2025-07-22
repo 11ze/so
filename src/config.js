@@ -34,6 +34,10 @@ export default {
         url: 'https://v.qq.com/x/search/?q=%s',
       },
       {
+        name: '爱壹帆',
+        url: 'https://www.iyf.tv/search/%s',
+      },
+      {
         name: '📕 小红书',
         url: 'https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed',
       },
