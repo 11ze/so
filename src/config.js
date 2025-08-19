@@ -22,20 +22,28 @@ export default {
         url: 'https://yhdm.one/search?q=%s',
       },
       {
-        name: "YouTube",
-        url: 'https://www.youtube.com/results?search_query=%s',
+        name: '樱之空动漫',
+        url: 'https://www.skr2.cc/vodsearch/-------------/?wd=%s',
+      },
+      {
+        name: 'OmoFun',
+        url: 'https://omofun.in/vod/search.html?wd=%s',
+      },
+      {
+        name: '爱壹帆',
+        url: 'https://www.iyf.tv/search/%s',
       },
       {
         name: '哔哩哔哩',
         url: 'https://search.bilibili.com/all?keyword=%s',
       },
       {
-        name: '🐧 腾讯视频',
-        url: 'https://v.qq.com/x/search/?q=%s',
+        name: "YouTube",
+        url: 'https://www.youtube.com/results?search_query=%s',
       },
       {
-        name: '爱壹帆',
-        url: 'https://www.iyf.tv/search/%s',
+        name: '🐧 腾讯视频',
+        url: 'https://v.qq.com/x/search/?q=%s',
       },
       {
         name: '📕 小红书',
