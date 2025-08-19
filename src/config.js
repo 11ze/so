@@ -10,28 +10,32 @@ export default {
   get urls() {
     return [
       {
-        name: '🏆 豆瓣',
-        url: 'https://www.douban.com/search?q=%s',
+        name: 'Google',
+        url: 'https://www.google.com/search?q=%s',
       },
       {
-        name: 'AGE',
-        url: 'https://www.agedm.org/search?query=%s',
+        name: '搜狗',
+        url: 'https://www.sogou.com/web?query=%s',
       },
       {
-        name: '🌸 樱花动漫',
-        url: 'https://yhdm.one/search?q=%s',
+        name: '百度',
+        url: 'https://www.baidu.com/s?wd=%s',
       },
       {
-        name: '樱之空动漫',
-        url: 'https://www.skr2.cc/vodsearch/-------------/?wd=%s',
+        name: 'Bing',
+        url: 'https://www.bing.com/search?q=%s',
       },
       {
-        name: 'OmoFun',
-        url: 'https://omofun.in/vod/search.html?wd=%s',
+        name: '📕 小红书',
+        url: 'https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed',
       },
       {
-        name: '爱壹帆',
-        url: 'https://www.iyf.tv/search/%s',
+        name: 'Google V2EX',
+        url: 'https://www.google.com/search?q=site:v2ex.com/t%20%s',
+      },
+      {
+        name: 'SOV2EX',
+        url: 'https://www.sov2ex.com/?q=%s&ref=opensearch',
       },
       {
         name: '哔哩哔哩',
@@ -46,32 +50,28 @@ export default {
         url: 'https://v.qq.com/x/search/?q=%s',
       },
       {
-        name: '📕 小红书',
-        url: 'https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed',
+        name: '🏆 豆瓣',
+        url: 'https://www.douban.com/search?q=%s',
       },
       {
-        name: '搜狗',
-        url: 'https://www.sogou.com/web?query=%s',
+        name: 'AGE',
+        url: 'https://www.agedm.org/search?query=%s',
       },
       {
-        name: 'Google',
-        url: 'https://www.google.com/search?q=%s',
+        name: '🌸 樱花动漫',
+        url: 'https://yhdm.one/search?q=%s',
       },
       {
-        name: 'SOV2EX',
-        url: 'https://www.sov2ex.com/?q=%s&ref=opensearch',
+        name: '🌸 樱之空动漫',
+        url: 'https://www.skr2.cc/vodsearch/-------------/?wd=%s',
       },
       {
-        name: 'Google V2EX',
-        url: 'https://www.google.com/search?q=site:v2ex.com/t%20%s',
+        name: 'OmoFun',
+        url: 'https://omofun.in/vod/search.html?wd=%s',
       },
       {
-        name: '百度',
-        url: 'https://www.baidu.com/s?wd=%s',
-      },
-      {
-        name: 'Bing',
-        url: 'https://www.bing.com/search?q=%s',
+        name: '爱壹帆',
+        url: 'https://www.iyf.tv/search/%s',
       },
     ];
   },
