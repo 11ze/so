@@ -1,6 +1,6 @@
 export default {
   get title() {
-    return '11ze';
+    return 'so';
   },
 
   get base() {

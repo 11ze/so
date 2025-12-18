@@ -8,81 +8,441 @@ export default {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{title}}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔍</text></svg>">
     <style>
+      :root {
+        --primary-blue: #2c5aa0;
+        --light-blue: #e6f0fa;
+        --accent-blue: #4a90e2;
+        --hover-blue: #357abd;
+        --text-dark: #2c3e50;
+        --text-light: #6c757d;
+        --white: #ffffff;
+        --border-color: #d1e3f3;
+        --shadow-light: rgba(44, 90, 160, 0.08);
+        --shadow-medium: rgba(44, 90, 160, 0.15);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
       body {
-        font-family: Arial, sans-serif;
-        background-color: #ffffff; /* 白色背景 */
-        color: #333; /* 主要文本颜色 */
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, #f5f9ff 0%, #e6f0fa 100%);
+        color: var(--text-dark);
         margin: 0;
         padding: 0;
+        min-height: 100vh;
       }
 
       .container {
-        max-width: 800px;
+        max-width: 1200px;
         margin: 0 auto;
-        padding: 20px;
+        padding: 40px 20px;
+      }
+
+      h1 {
+        color: var(--primary-blue);
+        font-size: 3.5rem;
+        font-weight: 700;
+        margin: 0 0 40px 0;
+        text-align: center;
+        letter-spacing: -1px;
+        text-shadow: 0 2px 4px var(--shadow-light);
+      }
+
+      .search-container {
+        margin-bottom: 40px;
+        position: relative;
+      }
+
+      #searchForm {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        max-width: 700px;
+        margin: 0 auto;
+        position: relative;
+      }
+
+      .input-wrapper {
+        position: relative;
+        flex: 1;
+        display: flex;
+        align-items: center;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        height: 64px;
+        padding: 0 50px 0 24px;
+        border: 2px solid var(--border-color);
+        border-radius: 50px;
+        font-size: 18px;
+        background-color: var(--white);
+        box-shadow: 0 4px 12px var(--shadow-light);
+        transition: all 0.3s ease;
+        outline: none;
+      }
+
+      .clear-button {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        font-size: 22px;
+        font-weight: bold;
+        width: 32px;
+        height: 32px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+      }
+
+      .clear-button:hover {
+        background-color: var(--light-blue);
+        color: var(--primary-blue);
+        opacity: 1;
+      }
+
+      .clear-button:active {
+        transform: translateY(-50%) scale(0.9);
+      }
+
+      input[type="text"]:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1), 0 4px 12px var(--shadow-medium);
+      }
+
+      input[type="text"]::placeholder {
+        color: var(--text-light);
+      }
+
+      #searchButton {
+        height: 64px;
+        padding: 0 32px;
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: 600;
+        margin-left: 16px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px var(--shadow-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+      }
+
+      #searchButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px var(--shadow-medium);
+        background: linear-gradient(135deg, var(--hover-blue) 0%, var(--primary-blue) 100%);
+      }
+
+      #searchButton:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px var(--shadow-light);
+      }
+
+      .current-search {
+        padding: 16px 24px;
+        background-color: var(--white);
+        border-radius: 12px;
+        margin-bottom: 30px;
+        font-weight: 600;
+        color: var(--primary-blue);
+        text-align: center;
+        box-shadow: 0 4px 12px var(--shadow-light);
+        border-left: 4px solid var(--accent-blue);
+        display: none;
+        animation: slideDown 0.3s ease;
       }
 
       .button-container {
         display: grid;
-        grid-template-columns: repeat(4, 130px); /* 列数和宽度 */
-        grid-gap: 8px; /* 按钮间距 */
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
       }
 
       .button {
-        padding: 0px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        background-color: #f0f8ff; /* 淡蓝色背景 */
-        border-radius: 5px;
-        cursor: pointer; /* 鼠标悬停时显示手型光标 */
-        transition: background-color 0.3s; /* 添加过渡效果 */
+        background-color: var(--white);
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px var(--shadow-light);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+        position: relative;
       }
 
       .button:hover {
-          background-color: #add8e6; /* 悬停时的背景颜色变化 */
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px var(--shadow-medium);
+        border-color: var(--accent-blue);
       }
 
-      a {
-          text-decoration: none; /* 移除链接下划线 */
-          color: #333; /* 链接文本颜色 */
-          display: block; /* 将链接元素设置为块级元素，使其占据整个列表项空间 */
-          padding: 10px; /* 为链接添加内边距，使整个列表项可点击 */
+      .button:active {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px var(--shadow-medium);
       }
 
-      input[type="text"] {
-        width: 65.2%;
-        height: 30px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
+      .button a {
+        text-decoration: none;
+        color: var(--text-dark);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        padding: 20px 16px;
+        font-weight: 500;
+        font-size: 16px;
+        text-align: center;
+        transition: all 0.2s ease;
+        position: relative;
+        z-index: 1;
+      }
+
+      .button:hover a {
+        color: var(--primary-blue);
+      }
+
+      .button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--primary-blue), var(--accent-blue));
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+        z-index: 0;
+      }
+
+      .button:hover::before {
+        transform: scaleX(1);
+      }
+
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px 15px;
+        }
+
+        h1 {
+          font-size: 2.5rem;
+          margin-bottom: 30px;
+        }
+
+        #searchForm {
+          flex-direction: column;
+          gap: 16px;
+          align-items: stretch;
+        }
+
+        input[type="text"] {
+          width: 100%;
+          margin-left: 0;
+          height: 64px !important;
+          min-height: 64px;
+          max-height: 64px;
+        }
+
+        .clear-button {
+          display: none;
+          width: 32px;
+          height: 32px;
+          font-size: 22px;
+          font-weight: bold;
+        }
+
+        .clear-button.show {
+          display: flex;
+        }
+
+        #searchButton {
+          width: 100%;
+          margin-left: 0;
+          height: 64px;
+        }
+
+        .button-container {
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 12px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .button-container {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
     </head>
     <body>
     <div class="container">
         <h1>
-            搜索
-            <form id="searchForm" action="/" method="GET">
-              <input type="text" id="searchInput" name="query" placeholder="输入搜索内容并按回车" value="{{keyword}}"/>
-            </form>
+            so
         </h1>
+        <div class="search-container">
+            <form id="searchForm" action="/" method="GET">
+              <div class="input-wrapper">
+                <input type="text" id="searchInput" name="query" placeholder="搜索..." value="{{keyword}}"/>
+                <button type="button" id="clearButton" class="clear-button">×</button>
+              </div>
+              <button type="button" id="searchButton">搜索 ↩︎</button>
+            </form>
+        </div>
+        <div id="currentSearchDisplay" class="current-search" style="{{current_search_style}}">{{current_search}}</div>
         <div class="button-container">
             {{button_list}}
         </div>
     </div>
 
     <script>
-    document.getElementById("searchInput").addEventListener("keypress", function(e) {
-        if (e.key === "Enter") {
-            e.preventDefault(); // 阻止默认提交行为
-            var query = document.getElementById("searchInput").value;
-            var url = "{{base}}" + query;
-            window.location.href = url;
+    // 检测客户端类型并设置合适的placeholder
+    function getClientSpecificPlaceholder() {
+      const userAgent = navigator.userAgent.toLowerCase();
+      const platform = navigator.platform.toLowerCase();
+
+      // 检测移动设备
+      if (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent)) {
+        return "搜索...";
+      }
+
+      // 检测Mac系统
+      if (platform.includes('mac') || userAgent.includes('mac')) {
+        return "CMD + K 或 CMD + F 或 /";
+      }
+
+      // 默认为Windows/Linux系统
+      return "CTRL + K 或 CTRL + F 或 /";
+    }
+
+    // 设置合适的placeholder并聚焦搜索框
+    document.addEventListener("DOMContentLoaded", function() {
+      const searchInput = document.getElementById("searchInput");
+      if (searchInput) {
+        searchInput.placeholder = getClientSpecificPlaceholder();
+
+        // 检测是否为移动设备，如果不是才自动聚焦搜索框
+        const userAgent = navigator.userAgent.toLowerCase();
+        const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+
+        if (!isMobile) {
+          // 页面加载时自动聚焦到搜索框（仅在桌面端）
+          searchInput.focus();
+          // 如果有内容，将光标移动到末尾
+          if (searchInput.value) {
+            searchInput.setSelectionRange(searchInput.value.length, searchInput.value.length);
+          }
+        }
+
+        // 初始化清空按钮状态
+        toggleClearButton();
+
+        // 监听输入框内容变化
+        searchInput.addEventListener("input", toggleClearButton);
+      }
+    });
+
+    // 全局快捷键监听器
+    document.addEventListener("keydown", function(e) {
+        // "/" 键且不在输入框中时
+        if (e.key === "/" && document.activeElement.id !== "searchInput") {
+            e.preventDefault();
+            document.getElementById("searchInput").focus();
+            return;
+        }
+
+        // Cmd+K 或 Cmd+F (Mac) 或 Ctrl+K/Ctrl+F (Windows/Linux)
+        if ((e.metaKey || e.ctrlKey) && ["k", "f"].includes(e.key.toLowerCase())) {
+            e.preventDefault();
+            document.getElementById("searchInput").focus();
+            return;
         }
     });
+
+    // 搜索框的回车键监听器
+    document.getElementById("searchInput").addEventListener("keydown", function(e) {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            performSearch();
+        }
+    });
+
+    document.getElementById("searchButton").addEventListener("click", function() {
+        performSearch();
+    });
+
+    document.getElementById("clearButton").addEventListener("click", function() {
+        clearSearch();
+    });
+
+    function clearSearch() {
+        var searchInput = document.getElementById("searchInput");
+        searchInput.value = "";
+        searchInput.focus();
+        updateCurrentSearchDisplay();
+        toggleClearButton();
+    }
+
+    function toggleClearButton() {
+        var searchInput = document.getElementById("searchInput");
+        var clearButton = document.getElementById("clearButton");
+
+        if (searchInput.value.trim() === "") {
+            clearButton.classList.remove("show");
+            clearButton.style.display = "none";
+        } else {
+            clearButton.classList.add("show");
+            clearButton.style.display = "flex";
+        }
+    }
+
+    function performSearch() {
+        var query = document.getElementById("searchInput").value;
+        var url = "{{base}}" + query;
+        window.location.href = url;
+    }
+
+    // 显示当前搜索内容
+    function updateCurrentSearchDisplay() {
+        var query = document.getElementById("searchInput").value;
+        var currentSearchDiv = document.getElementById("currentSearchDisplay");
+
+        if (query.trim() !== "") {
+            currentSearchDiv.textContent = "当前搜索：" + query;
+            currentSearchDiv.style.display = "block";
+        } else {
+            currentSearchDiv.style.display = "none";
+        }
+    }
+
+    // 页面加载完成后不再自动更新显示，保持与title一致的更新时机
     </script>
     </body>
     </html>
@@ -99,14 +459,22 @@ export default {
     const encodeSearchText = encodeURIComponent(searchText);
 
     const buttonList = [];
+    let currentSearchDisplay = '';
+    let currentSearchStyle = 'display: none;';
     if (searchText) {
       for (const resource of resourceList) {
         const finalUrl = resource.url.replace('%s', encodeSearchText);
         buttonList.push(`<div class="button"><a href="${finalUrl}">${resource.name}</a></div>`);
       }
       title += ' - ' + searchText;
+      currentSearchDisplay = '当前搜索: ' + searchText;
+      currentSearchStyle = 'display: block;';
     }
 
-    return html.replace('{{title}}', title).replace('{{button_list}}', buttonList.join('\n'));
+    return html
+      .replace('{{title}}', title)
+      .replace('{{button_list}}', buttonList.join('\n'))
+      .replace('{{current_search}}', currentSearchDisplay)
+      .replace('{{current_search_style}}', currentSearchStyle);
   },
 };
