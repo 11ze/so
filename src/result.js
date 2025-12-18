@@ -355,6 +355,21 @@ export default {
         transition: all 0.2s ease;
         position: relative;
         z-index: 1;
+        gap: 8px;
+      }
+
+      .button-icon {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        object-fit: contain;
+      }
+
+      .button-text {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .button:hover a {
@@ -762,13 +777,31 @@ export default {
 
     const encodeSearchText = encodeURIComponent(searchText);
 
+    // 处理图标的函数
+    function getIconHtml(icon) {
+      if (!icon || icon.trim() === '') {
+        return '';
+      }
+
+      // 检查是否是base64图片
+      if (icon.startsWith('data:image/')) {
+        return `<img src="${icon}" alt="" class="button-icon">`;
+      }
+
+      // 否则作为URL处理
+      return `<img src="${icon}" alt="" class="button-icon" onerror="this.style.display='none'">`;
+    }
+
     const buttonList = [];
     let currentSearchDisplay = '';
     let currentSearchStyle = 'display: none;';
     if (searchText) {
       for (const resource of resourceList) {
         const finalUrl = resource.url.replace('%s', encodeSearchText);
-        buttonList.push(`<div class="button"><a href="${finalUrl}">${resource.name}</a></div>`);
+        const iconHtml = getIconHtml(resource.icon || '');
+        buttonList.push(
+          `<div class="button"><a href="${finalUrl}">${iconHtml}<span class="button-text">${resource.name}</span></a></div>`
+        );
       }
       title += ' - ' + searchText;
       currentSearchDisplay = '当前搜索: ' + searchText;
