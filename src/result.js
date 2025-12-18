@@ -55,15 +55,15 @@ export default {
       .search-container {
         margin-bottom: 40px;
         position: relative;
+        width: 100%;
       }
 
       #searchForm {
         display: flex;
         justify-content: center;
         align-items: stretch;
-        max-width: 700px;
-        margin: 0 auto;
         position: relative;
+        width: 100%;
       }
 
       .input-wrapper {
@@ -71,6 +71,148 @@ export default {
         flex: 1;
         display: flex;
         align-items: center;
+      }
+
+      .form-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .history-dropdown-btn {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
+        border: none;
+        border-radius: 50px;
+        padding: 0 20px;
+        height: 64px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px var(--shadow-light);
+        min-width: 50px;
+        margin-left: 16px;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+      }
+
+      .history-dropdown-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px var(--shadow-medium);
+        background: linear-gradient(135deg, var(--hover-blue) 0%, var(--primary-blue) 100%);
+      }
+
+      .history-dropdown-btn::after {
+        content: '▼';
+        font-size: 12px;
+        color: white;
+        margin-left: 5px;
+        transition: transform 0.3s ease;
+      }
+
+      .history-dropdown-btn.active::after {
+        transform: rotate(180deg);
+      }
+
+      .history-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 100%;
+        max-width: 500px;
+        background: var(--white);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        box-shadow: 0 8px 24px var(--shadow-medium);
+        z-index: 1000;
+        display: none;
+        margin-top: 8px;
+        overflow: hidden;
+      }
+
+      .history-dropdown.show {
+        display: block;
+        animation: fadeIn 0.2s ease;
+      }
+
+      .history-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .history-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-color);
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+      }
+
+      .history-item:last-child {
+        border-bottom: none;
+      }
+
+      .history-item:hover {
+        background-color: var(--light-blue);
+      }
+
+      .history-item-text {
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: var(--text-dark);
+        font-size: 14px;
+      }
+
+      .history-item-delete {
+        background: none;
+        border: none;
+        color: var(--text-light);
+        cursor: pointer;
+        font-size: 20px;
+        font-weight: bold;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+        opacity: 0.7;
+        margin-left: 8px;
+        padding: 6px;
+      }
+
+      .history-item-delete:hover {
+        background-color: rgba(255, 59, 48, 0.1);
+        color: rgba(255, 59, 48, 0.8);
+        opacity: 1;
+      }
+
+      .history-empty {
+        padding: 20px;
+        text-align: center;
+        color: var(--text-light);
+        font-size: 14px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
       input[type="text"] {
@@ -261,6 +403,12 @@ export default {
           flex-direction: column;
           gap: 16px;
           align-items: stretch;
+          width: 100%;
+        }
+
+        .input-wrapper {
+          flex-direction: row;
+          width: 100%;
         }
 
         input[type="text"] {
@@ -289,6 +437,19 @@ export default {
           height: 64px;
         }
 
+        .history-dropdown-btn {
+          width: 100%;
+          margin-left: 0;
+          margin-top: 16px;
+          height: 64px;
+        }
+
+        .history-dropdown {
+          max-width: 100%;
+          left: 0;
+          right: 0;
+        }
+
         .button-container {
           grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
           gap: 12px;
@@ -308,13 +469,19 @@ export default {
             so
         </h1>
         <div class="search-container">
-            <form id="searchForm" action="/" method="GET">
-              <div class="input-wrapper">
-                <input type="text" id="searchInput" name="query" placeholder="搜索..." value="{{keyword}}"/>
-                <button type="button" id="clearButton" class="clear-button">×</button>
-              </div>
-              <button type="button" id="searchButton">搜索 ↩︎</button>
-            </form>
+            <div class="form-wrapper">
+              <form id="searchForm" action="/" method="GET">
+                <div class="input-wrapper">
+                  <input type="text" id="searchInput" name="query" placeholder="搜索..." value="{{keyword}}"/>
+                  <button type="button" id="clearButton" class="clear-button">×</button>
+                </div>
+                <button type="button" id="searchButton">搜索 ↩︎</button>
+                <button type="button" id="historyDropdownBtn" class="history-dropdown-btn" title="搜索历史">搜索历史</button>
+                <div id="historyDropdown" class="history-dropdown">
+                  <div id="historyList" class="history-list"></div>
+                </div>
+              </form>
+            </div>
         </div>
         <div id="currentSearchDisplay" class="current-search" style="{{current_search_style}}">{{current_search}}</div>
         <div class="button-container">
@@ -323,6 +490,118 @@ export default {
     </div>
 
     <script>
+    // 搜索历史管理
+    const SEARCH_HISTORY_KEY = 'search_history';
+    const MAX_HISTORY_ITEMS = 10;
+
+    // 获取搜索历史
+    function getSearchHistory() {
+      try {
+        const history = localStorage.getItem(SEARCH_HISTORY_KEY);
+        return history ? JSON.parse(history) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    // 保存搜索历史
+    function saveSearchHistory(query) {
+      if (!query || query.trim() === '') return;
+
+      const history = getSearchHistory();
+      // 移除重复项
+      const filteredHistory = history.filter(item => item !== query);
+      // 添加到开头
+      filteredHistory.unshift(query);
+      // 限制数量
+      const limitedHistory = filteredHistory.slice(0, MAX_HISTORY_ITEMS);
+
+      try {
+        localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(limitedHistory));
+      } catch (e) {
+        console.error('Failed to save search history:', e);
+      }
+    }
+
+    // 删除搜索历史项
+    function deleteSearchHistoryItem(query) {
+      const history = getSearchHistory();
+      const filteredHistory = history.filter(item => item !== query);
+
+      try {
+        localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(filteredHistory));
+        renderHistoryDropdown();
+      } catch (e) {
+        console.error('Failed to delete search history item:', e);
+      }
+    }
+
+    // 渲染搜索历史下拉框
+    function renderHistoryDropdown() {
+      const historyList = document.getElementById('historyList');
+      const history = getSearchHistory();
+
+      if (history.length === 0) {
+        historyList.innerHTML = '<div class="history-empty">暂无搜索历史</div>';
+        return;
+      }
+
+      const historyItems = history.map(query =>
+        '<div class="history-item" data-query="' + encodeURIComponent(query) + '">' +
+          '<span class="history-item-text">' + query + '</span>' +
+          '<button class="history-item-delete" data-query="' + encodeURIComponent(query) + '">×</button>' +
+        '</div>'
+      ).join('');
+
+      historyList.innerHTML = historyItems;
+
+      // 添加点击事件
+      document.querySelectorAll('.history-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+          if (e.target.classList.contains('history-item-delete')) {
+            e.stopPropagation();
+            const query = decodeURIComponent(e.target.dataset.query);
+            deleteSearchHistoryItem(query);
+          } else {
+            const query = decodeURIComponent(this.dataset.query);
+            document.getElementById('searchInput').value = query;
+            toggleClearButton();
+            hideHistoryDropdown();
+            performSearch();
+          }
+        });
+      });
+    }
+
+    // 显示搜索历史下拉框
+    function showHistoryDropdown() {
+      const dropdown = document.getElementById('historyDropdown');
+      const btn = document.getElementById('historyDropdownBtn');
+
+      renderHistoryDropdown();
+      dropdown.classList.add('show');
+      btn.classList.add('active');
+    }
+
+    // 隐藏搜索历史下拉框
+    function hideHistoryDropdown() {
+      const dropdown = document.getElementById('historyDropdown');
+      const btn = document.getElementById('historyDropdownBtn');
+
+      dropdown.classList.remove('show');
+      btn.classList.remove('active');
+    }
+
+    // 切换搜索历史下拉框显示状态
+    function toggleHistoryDropdown() {
+      const dropdown = document.getElementById('historyDropdown');
+      if (dropdown.classList.contains('show')) {
+        hideHistoryDropdown();
+      } else {
+        showHistoryDropdown();
+      }
+    }
+
     // 检测客户端类型并设置合适的placeholder
     function getClientSpecificPlaceholder() {
       const userAgent = navigator.userAgent.toLowerCase();
@@ -366,6 +645,27 @@ export default {
 
         // 监听输入框内容变化
         searchInput.addEventListener("input", toggleClearButton);
+
+        // 历史下拉框按钮事件
+        document.getElementById("historyDropdownBtn").addEventListener("click", function(e) {
+          e.preventDefault();
+          toggleHistoryDropdown();
+        });
+
+        // 点击页面其他地方关闭历史下拉框
+        document.addEventListener("click", function(e) {
+          const dropdown = document.getElementById("historyDropdown");
+          const btn = document.getElementById("historyDropdownBtn");
+
+          if (!dropdown.contains(e.target) && e.target !== btn) {
+            hideHistoryDropdown();
+          }
+        });
+
+        // 页面加载时，如果搜索框有内容，将其添加到搜索历史
+        if (searchInput.value.trim() !== "") {
+          saveSearchHistory(searchInput.value.trim());
+        }
       }
     });
 
@@ -425,6 +725,10 @@ export default {
 
     function performSearch() {
         var query = document.getElementById("searchInput").value;
+        if (query.trim() !== "") {
+          // 保存搜索历史
+          saveSearchHistory(query);
+        }
         var url = "{{base}}" + query;
         window.location.href = url;
     }
