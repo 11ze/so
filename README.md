@@ -1,6 +1,6 @@
 # so
 
-基于 Cloudflare Worker 实现自己的搜索网站。
+基于 Cloudflare Workers 实现自己的搜索网站。
 
 ## 功能亮点
 
