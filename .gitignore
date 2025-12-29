@@ -1,3 +1,30 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.wrangler/
+dist/
+mr-dev/
+
+# Environment & secrets
+.env
+.env.local
+dev.vars
+
+# Logs
+*.log
+logs/
+
+# Temp files
+tmp/
+.cache/
+
+# OS files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Claude Code
 .claude/*local*
-node_modules
-tmp
