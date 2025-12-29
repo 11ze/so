@@ -1,10 +1,45 @@
+// 开发环境配置
+const DEV_CONFIG = {
+  base: 'http://localhost:8787/?q=',
+};
+
+// 生产环境配置
+const PROD_CONFIG = {
+  base: 'https://so.wangze.tech?q=',
+};
+
 export default {
   get title() {
     return 'so';
   },
 
-  get base() {
-    return 'https://so.wangze.tech?q=';
+  // 获取当前环境的 base URL
+  getBaseForEnv(url) {
+    // 如果传入 URL,使用 URL 的 origin
+    if (url) {
+      try {
+        const parsed = new URL(url);
+        // localhost 或 127.0.0.1 认为是开发环境
+        if (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1') {
+          return DEV_CONFIG.base;
+        }
+        return `${parsed.origin}/?q=`;
+      } catch (e) {
+        // URL 解析失败,返回默认
+        return PROD_CONFIG.base;
+      }
+    }
+
+    // 默认返回生产环境配置
+    return PROD_CONFIG.base;
+  },
+
+  // 验证配置 - 统一管理所有验证参数
+  validation: {
+    maxQueryLength: 500,      // 搜索关键词最大长度
+    minQueryLength: 0,        // 搜索关键词最小长度
+    maxHistoryItems: 10,      // 搜索历史最大记录数
+    maxDataUriSize: 100 * 1024, // 图标 data URI 最大大小 (100KB)
   },
 
   get urls() {

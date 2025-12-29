@@ -1,7 +1,15 @@
 import config from './config.js';
+import {
+  escapeHtml,
+  escapeHtmlAttribute,
+  validateAndCleanKeyword,
+  isValidUrl,
+  encodeUrlParam,
+  isValidIconUrl,
+} from './utils/security.js';
 
 export default {
-  fetch(searchText) {
+  fetch(searchText, requestUrl) {
     const indexHtml = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -365,6 +373,10 @@ export default {
         object-fit: contain;
       }
 
+      .button-icon.error {
+        display: none;
+      }
+
       .button-text {
         flex: 1;
         overflow: hidden;
@@ -507,27 +519,89 @@ export default {
     <script>
     // 搜索历史管理
     const SEARCH_HISTORY_KEY = 'search_history';
+    // 从配置中读取验证参数(实际应用中这些值应该从服务端传递)
     const MAX_HISTORY_ITEMS = 10;
+    const MAX_QUERY_LENGTH = 500; // 最大查询长度
+
+    // 预编译正则表达式常量,避免重复创建,提升性能
+    const DANGEROUS_PATTERNS = [
+      /<script[^>]*>/gi,
+      /javascript:/gi,
+      /on[a-z]+\s*=/gi, // 优化: 只匹配事件处理器,避免 w+ 的贪婪匹配
+      /<iframe/gi,
+      /<embed/gi,
+      /<object/gi,
+    ];
+
+    // 验证和清理搜索关键词
+    function validateAndCleanQuery(query) {
+      if (!query || typeof query !== 'string') return '';
+
+      let cleaned = query.trim();
+
+      // 限制长度
+      if (cleaned.length > MAX_QUERY_LENGTH) {
+        cleaned = cleaned.substring(0, MAX_QUERY_LENGTH);
+      }
+
+      // 移除潜在的恶意字符
+      // 使用预编译的正则表达式常量,避免重复创建,提升性能
+      for (const pattern of DANGEROUS_PATTERNS) {
+        if (pattern.test(cleaned)) {
+          // 发现恶意模式,返回空字符串
+          console.warn('Potentially malicious query detected and rejected');
+          return '';
+        }
+      }
+
+      return cleaned;
+    }
 
     // 获取搜索历史
     function getSearchHistory() {
       try {
         const history = localStorage.getItem(SEARCH_HISTORY_KEY);
-        return history ? JSON.parse(history) : [];
+        if (!history) return [];
+
+        const parsed = JSON.parse(history);
+
+        // 验证数据结构
+        if (!Array.isArray(parsed)) return [];
+
+        // 清理和验证每个历史记录
+        return parsed
+          .filter(item => typeof item === 'string')
+          .map(item => validateAndCleanQuery(item))
+          .filter(item => item.length > 0)
+          .slice(0, MAX_HISTORY_ITEMS);
       } catch (e) {
+        console.error('Failed to parse search history:', e);
+        // 清除损坏的数据
+        try {
+          localStorage.removeItem(SEARCH_HISTORY_KEY);
+        } catch (cleanupError) {
+          console.error('Failed to clear corrupted history:', cleanupError);
+        }
         return [];
       }
     }
 
     // 保存搜索历史
     function saveSearchHistory(query) {
-      if (!query || query.trim() === '') return;
+      if (!query || typeof query !== 'string') return;
+
+      // 验证和清理查询
+      const cleanedQuery = validateAndCleanQuery(query);
+      if (!cleanedQuery) return;
 
       const history = getSearchHistory();
+
       // 移除重复项
-      const filteredHistory = history.filter(item => item !== query);
+      const filteredHistory = history.filter(item => item !== cleanedQuery);
+
       // 添加到开头
-      filteredHistory.unshift(query);
+      filteredHistory.unshift(cleanedQuery);
+
       // 限制数量
       const limitedHistory = filteredHistory.slice(0, MAX_HISTORY_ITEMS);
 
@@ -535,13 +609,28 @@ export default {
         localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(limitedHistory));
       } catch (e) {
         console.error('Failed to save search history:', e);
+
+        // 如果是配额超限错误,尝试删除最旧的记录后重试
+        if (e.name === 'QuotaExceededError' && limitedHistory.length > 1) {
+          try {
+            const reducedHistory = limitedHistory.slice(0, Math.floor(MAX_HISTORY_ITEMS / 2));
+            localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(reducedHistory));
+          } catch (retryError) {
+            console.error('Failed to save reduced history:', retryError);
+          }
+        }
       }
     }
 
     // 删除搜索历史项
     function deleteSearchHistoryItem(query) {
+      if (!query || typeof query !== 'string') return;
+
+      const cleanedQuery = validateAndCleanQuery(query);
+      if (!cleanedQuery) return;
+
       const history = getSearchHistory();
-      const filteredHistory = history.filter(item => item !== query);
+      const filteredHistory = history.filter(item => item !== cleanedQuery);
 
       try {
         localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(filteredHistory));
@@ -554,6 +643,8 @@ export default {
     // 渲染搜索历史下拉框
     function renderHistoryDropdown() {
       const historyList = document.getElementById('historyList');
+      if (!historyList) return;
+
       const history = getSearchHistory();
 
       if (history.length === 0) {
@@ -561,14 +652,30 @@ export default {
         return;
       }
 
-      const historyItems = history.map(query =>
-        '<div class="history-item" data-query="' + encodeURIComponent(query) + '">' +
-          '<span class="history-item-text">' + query + '</span>' +
-          '<button class="history-item-delete" data-query="' + encodeURIComponent(query) + '">×</button>' +
-        '</div>'
-      ).join('');
+      // 安全地创建 DOM 元素
+      historyList.innerHTML = '';
 
-      historyList.innerHTML = historyItems;
+      for (const query of history) {
+        const itemDiv = document.createElement('div');
+        itemDiv.className = 'history-item';
+        // 安全地存储原始查询(使用 data 属性前会进行 encodeURIComponent)
+        itemDiv.dataset.query = encodeURIComponent(query);
+
+        const textSpan = document.createElement('span');
+        textSpan.className = 'history-item-text';
+        textSpan.textContent = query; // 使用 textContent 避免 XSS
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'history-item-delete';
+        deleteBtn.textContent = '×';
+        deleteBtn.dataset.query = encodeURIComponent(query);
+        deleteBtn.setAttribute('aria-label', '删除此历史记录');
+        deleteBtn.title = '删除此历史记录';
+
+        itemDiv.appendChild(textSpan);
+        itemDiv.appendChild(deleteBtn);
+        historyList.appendChild(itemDiv);
+      }
 
       // 添加点击事件
       document.querySelectorAll('.history-item').forEach(item => {
@@ -579,10 +686,13 @@ export default {
             deleteSearchHistoryItem(query);
           } else {
             const query = decodeURIComponent(this.dataset.query);
-            document.getElementById('searchInput').value = query;
-            toggleClearButton();
-            hideHistoryDropdown();
-            performSearch();
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+              searchInput.value = query;
+              toggleClearButton();
+              hideHistoryDropdown();
+              performSearch();
+            }
           }
         });
       });
@@ -592,6 +702,8 @@ export default {
     function showHistoryDropdown() {
       const dropdown = document.getElementById('historyDropdown');
       const btn = document.getElementById('historyDropdownBtn');
+
+      if (!dropdown || !btn) return;
 
       renderHistoryDropdown();
       dropdown.classList.add('show');
@@ -603,6 +715,8 @@ export default {
       const dropdown = document.getElementById('historyDropdown');
       const btn = document.getElementById('historyDropdownBtn');
 
+      if (!dropdown || !btn) return;
+
       dropdown.classList.remove('show');
       btn.classList.remove('active');
     }
@@ -610,6 +724,8 @@ export default {
     // 切换搜索历史下拉框显示状态
     function toggleHistoryDropdown() {
       const dropdown = document.getElementById('historyDropdown');
+      if (!dropdown) return;
+
       if (dropdown.classList.contains('show')) {
         hideHistoryDropdown();
       } else {
@@ -718,7 +834,7 @@ export default {
     });
 
     function clearSearch() {
-        var searchInput = document.getElementById("searchInput");
+        const searchInput = document.getElementById("searchInput");
         searchInput.value = "";
         searchInput.focus();
         updateCurrentSearchDisplay();
@@ -726,8 +842,10 @@ export default {
     }
 
     function toggleClearButton() {
-        var searchInput = document.getElementById("searchInput");
-        var clearButton = document.getElementById("clearButton");
+        const searchInput = document.getElementById("searchInput");
+        const clearButton = document.getElementById("clearButton");
+
+        if (!searchInput || !clearButton) return;
 
         if (searchInput.value.trim() === "") {
             clearButton.classList.remove("show");
@@ -739,21 +857,36 @@ export default {
     }
 
     function performSearch() {
-        var query = document.getElementById("searchInput").value;
-        if (query.trim() !== "") {
+        const searchInput = document.getElementById("searchInput");
+        if (!searchInput) return;
+
+        const rawQuery = searchInput.value;
+        if (!rawQuery || typeof rawQuery !== 'string') return;
+
+        // 验证和清理查询
+        const query = validateAndCleanQuery(rawQuery);
+
+        if (query && query.trim() !== "") {
           // 保存搜索历史
           saveSearchHistory(query);
         }
-        var url = "{{base}}" + query;
+
+        // 构建安全的 URL
+        const baseUrl = "{{base}}";
+        const url = baseUrl + encodeURIComponent(query);
         window.location.href = url;
     }
 
     // 显示当前搜索内容
     function updateCurrentSearchDisplay() {
-        var query = document.getElementById("searchInput").value;
-        var currentSearchDiv = document.getElementById("currentSearchDisplay");
+        const searchInput = document.getElementById("searchInput");
+        const currentSearchDiv = document.getElementById("currentSearchDisplay");
 
+        if (!searchInput || !currentSearchDiv) return;
+
+        const query = searchInput.value;
         if (query.trim() !== "") {
+            // 使用 textContent 而不是 innerHTML 防止 XSS
             currentSearchDiv.textContent = "当前搜索：" + query;
             currentSearchDiv.style.display = "block";
         } else {
@@ -762,49 +895,79 @@ export default {
     }
 
     // 页面加载完成后不再自动更新显示，保持与title一致的更新时机
-    </script>
+    </` + `script>
     </body>
     </html>
     `;
 
+    // 验证和清理搜索关键词 - 使用配置中的参数
+    const validationResult = validateAndCleanKeyword(searchText, {
+      maxLength: config.validation.maxQueryLength,
+      minLength: config.validation.minQueryLength,
+      allowEmpty: true,
+    });
+
     let title = config.title;
-    const base = config.base;
+    // 根据请求 URL 动态获取 base URL
+    const base = config.getBaseForEnv(requestUrl);
     const resourceList = config.urls;
 
-    const keyword = searchText || '';
+    // 使用验证和清理后的关键词
+    const keyword = validationResult.valid ? validationResult.cleaned : '';
 
-    let html = indexHtml.replace('{{base}}', base).replace('{{keyword}}', keyword);
+    let html = indexHtml.replace('{{base}}', base).replace('{{keyword}}', escapeHtmlAttribute(keyword));
 
-    const encodeSearchText = encodeURIComponent(searchText);
+    // 使用安全的 URL 编码
+    const encodeSearchText = keyword ? encodeUrlParam(keyword) : '';
 
-    // 处理图标的函数
+    // 处理图标的函数(增强安全性)
     function getIconHtml(icon) {
       if (!icon || icon.trim() === '') {
         return '';
       }
 
-      // 检查是否是base64图片
-      if (icon.startsWith('data:image/')) {
-        return `<img src="${icon}" alt="" class="button-icon">`;
+      // 验证图标 URL 是否安全 - 使用配置中的参数
+      if (!isValidIconUrl(icon, { maxDataUriSize: config.validation.maxDataUriSize })) {
+        return '';
       }
 
-      // 否则作为URL处理
-      return `<img src="${icon}" alt="" class="button-icon" onerror="this.style.display='none'">`;
+      // 检查是否是base64图片
+      if (icon.startsWith('data:image/')) {
+        return `<img src="${escapeHtmlAttribute(icon)}" alt="" class="button-icon" loading="lazy" onerror="this.classList.add('error')">`;
+      }
+
+      // 否则作为URL处理(添加 referrerpolicy 防止信息泄露)
+      // 使用 CSS 类控制错误状态,而不是内联样式
+      return `<img src="${escapeHtmlAttribute(icon)}" alt="" class="button-icon" loading="lazy" onerror="this.classList.add('error')" referrerpolicy="no-referrer">`;
     }
 
     const buttonList = [];
     let currentSearchDisplay = '';
     let currentSearchStyle = 'display: none;';
-    if (searchText) {
+
+    // 只有在关键词有效时才生成搜索按钮
+    if (keyword) {
       for (const resource of resourceList) {
+        // 验证搜索引擎 URL 模板
+        if (!resource.url || typeof resource.url !== 'string') {
+          continue;
+        }
+
         const finalUrl = resource.url.replace('%s', encodeSearchText);
+
+        // 验证生成的 URL 是否安全
+        if (!isValidUrl(finalUrl)) {
+          console.warn(`Invalid URL generated for ${resource.name}: ${finalUrl}`);
+          continue;
+        }
+
         const iconHtml = getIconHtml(resource.icon || '');
         buttonList.push(
-          `<div class="button"><a href="${finalUrl}">${iconHtml}<span class="button-text">${resource.name}</span></a></div>`
+          `<div class="button"><a href="${escapeHtmlAttribute(finalUrl)}" target="_blank" rel="noopener noreferrer">${iconHtml}<span class="button-text">${escapeHtml(resource.name)}</span></a></div>`
         );
       }
-      title += ' - ' + searchText;
-      currentSearchDisplay = '当前搜索: ' + searchText;
+      title += ' - ' + escapeHtml(keyword);
+      currentSearchDisplay = '当前搜索: ' + escapeHtml(keyword);
       currentSearchStyle = 'display: block;';
     }
 
