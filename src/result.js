@@ -9,7 +9,7 @@ import {
 } from './utils/security.js';
 
 export default {
-  fetch(searchText, requestUrl) {
+  fetch(searchText) {
     const indexHtml = `<!DOCTYPE html>
     <html lang="en">
     <head>
@@ -908,8 +908,8 @@ export default {
     });
 
     let title = config.title;
-    // 根据请求 URL 动态获取 base URL
-    const base = config.getBaseForEnv(requestUrl);
+    // 使用相对路径，自动适配当前域名
+    const base = '/?q=';
     const resourceList = config.urls;
 
     // 使用验证和清理后的关键词

@@ -16,8 +16,8 @@ export default {
     const url = new URL(request.url);
     const searchText = url.searchParams.get('q');
 
-    // 获取 HTML 内容 - 传递请求 URL 以便自动检测开发/生产环境
-    const html = result.fetch(searchText, request.url);
+    // 获取 HTML 内容
+    const html = result.fetch(searchText);
 
     // 生成安全响应头
     // 注意: allowInlineScripts 和 allowInlineStyles 必须为 true,
