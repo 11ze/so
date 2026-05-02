@@ -351,28 +351,6 @@ const INDEX_HTML = `<!DOCTYPE html>
         margin-top: 8px;
       }
 
-      .empty-hint {
-        display: none;
-        justify-content: center;
-        align-items: center;
-        min-height: 200px;
-        color: var(--text-light);
-        font-size: 15px;
-        font-weight: 400;
-        letter-spacing: 0.02em;
-        opacity: 0.7;
-        text-align: center;
-        padding: 40px 24px;
-        background: var(--glass-bg);
-        border: 1px dashed var(--glass-border);
-        border-radius: var(--radius-md);
-        max-width: 480px;
-        margin: 0 auto;
-      }
-
-      .button-container.empty + .empty-hint {
-        display: flex;
-      }
 
       .button {
         background: var(--glass-bg);
@@ -591,10 +569,6 @@ const INDEX_HTML = `<!DOCTYPE html>
           color: #ff6b6b;
         }
 
-        .empty-hint {
-          color: var(--text-light);
-          border-color: rgba(255, 255, 255, 0.06);
-        }
       }
     </style>
     </head>
@@ -620,7 +594,6 @@ const INDEX_HTML = `<!DOCTYPE html>
         <div class="button-container{{empty_class}}">
             {{button_list}}
         </div>
-        <div class="empty-hint">输入关键词，一次搜索多个引擎</div>
     </div>
 
     <script>
