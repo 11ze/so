@@ -72,7 +72,8 @@ const EMPTY_HTML = fillSlots(templateSource, {
   title: config.title,
   button_list: '',
   current_search: '',
-  current_search_style: '',
+  // 布局归 CSS（.current-search 默认 flex），空页才需要内联隐藏
+  current_search_style: 'display: none;',
   keyword: '',
 });
 
@@ -109,9 +110,9 @@ export default {
       ...ASSEMBLY_SLOTS,
       title: config.title + ' - ' + keywordHtml,
       button_list: buttonList.join('\n'),
-      current_search: '当前搜索: ' + keywordHtml,
-      // 空状态由 CSS 默认 display:none 兜底，有关键词时才需要显式显示
-      current_search_style: 'display: block;',
+      // label/keyword 双 span 结构在模板里，槽位只传转义后的关键词
+      current_search: keywordHtml,
+      current_search_style: '',
       keyword: escapeHtmlAttribute(keyword),
     });
   },

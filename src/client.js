@@ -158,7 +158,7 @@ function getClientSpecificPlaceholder() {
   if (isMobileDevice()) {
     return "搜索...";
   }
-  return "输入搜索内容，按 / 聚焦";
+  return "输入后回车搜索";
 }
 
 // 设置合适的placeholder并聚焦搜索框
@@ -243,10 +243,6 @@ document.getElementById(SEARCH_INPUT_ID).addEventListener("keydown", function(e)
         e.preventDefault();
         performSearch();
     }
-});
-
-document.getElementById("searchButton").addEventListener("click", function() {
-    performSearch();
 });
 
 document.getElementById("clearButton").addEventListener("click", function() {
