@@ -24,7 +24,7 @@ const HTML_ENTITIES = {
 const XSS_PATTERNS = [
   /<script/i,
   /javascript:/i,
-  /on\w+\s*=/i, // onclick=, onload= 等
+  /\bon\w+\s*=/i, // onclick=, onload= 等（词边界避免误杀 money=100 这类 on 在词中的查询）
   /<iframe/i,
   /<embed/i,
   /<object/i,
@@ -32,23 +32,6 @@ const XSS_PATTERNS = [
   /<meta/i,
   /<style/i,
   /expression\s*\(/i,
-];
-
-/**
- * XSS 模式字符串数组
- * 用于注入到前端，保持前后端模式一致性
- */
-export const XSS_PATTERN_STRINGS = [
-  '<script',
-  'javascript:',
-  'on\\w+\\s*=',
-  '<iframe',
-  '<embed',
-  '<object',
-  '<link',
-  '<meta',
-  '<style',
-  'expression\\s*\\(',
 ];
 
 /**
@@ -81,6 +64,16 @@ export function escapeHtmlAttribute(str) {
     .replace(/'/g, '&#x27;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+/**
+ * JSON 数据岛专用转义：JSON.stringify 不转义 /，
+ * < 需转义为 \u003C 防止字符串值提前闭合 <script> 标签
+ * @param {*} value - 可 JSON 序列化的值
+ * @returns {string} 可安全内联到 <script> 的 JSON 文本
+ */
+export function escapeJsonForScript(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003C');
 }
 
 /**
@@ -194,131 +187,41 @@ export function encodeUrlParam(str) {
 }
 
 /**
- * 生成 CSP (Content Security Policy) 头部值
- * @param {Object} options - 配置选项
+ * 生成 CSP 头部值
+ * 本站策略：单文件页面需允许内联脚本/样式，搜索引擎图标需要开放图片来源
  * @returns {string} CSP 头部值
  */
-export function generateCSP(options = {}) {
-  const {
-    allowInlineScripts = false, // 是否允许内联脚本
-    allowInlineStyles = true,   // 是否允许内联样式
-    allowEval = false,         // 是否允许 eval()
-    imgSources = ["*"],        // 图片来源
-    scriptSources = ["'self'"], // 脚本来源
-    styleSources = ["'self'", "'unsafe-inline'"], // 样式来源
-    connectSources = ["'self'"], // 连接来源
-    fontSources = ["'self'"],    // 字体来源
-    objectSources = ["'none'"],  // 对象来源
-    mediaSources = ["'self'"],   // 媒体来源
-    frameSources = ["'self'"],   // 框架来源
-  } = options;
-
-  const directives = [];
-
-  // 默认策略
-  directives.push("default-src 'self'");
-
-  // 脚本策略
-  if (allowInlineScripts) {
-    scriptSources.push("'unsafe-inline'");
-  }
-  if (allowEval) {
-    scriptSources.push("'unsafe-eval'");
-  }
-  directives.push(`script-src ${scriptSources.join(' ')}`);
-
-  // 样式策略
-  if (!allowInlineStyles && !styleSources.includes("'unsafe-inline'")) {
-    // 如果不允许内联样式,移除 unsafe-inline
-    const index = styleSources.indexOf("'unsafe-inline'");
-    if (index > -1) {
-      styleSources.splice(index, 1);
-    }
-  }
-  directives.push(`style-src ${styleSources.join(' ')}`);
-
-  // 其他策略
-  directives.push(`img-src ${imgSources.join(' ')}`);
-  directives.push(`connect-src ${connectSources.join(' ')}`);
-  directives.push(`font-src ${fontSources.join(' ')}`);
-  directives.push(`object-src ${objectSources.join(' ')}`);
-  directives.push(`media-src ${mediaSources.join(' ')}`);
-  directives.push(`frame-src ${frameSources.join(' ')}`);
-
-  // 添加其他安全策略
-  directives.push("base-uri 'self'");
-  directives.push("form-action 'self'");
-  directives.push("frame-ancestors 'none'"); // 防止被嵌入 iframe
-  directives.push("upgrade-insecure-requests"); // 升级不安全的请求
-
-  return directives.join('; ');
+export function generateCSP() {
+  return [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    'img-src * data:',
+    "connect-src 'self'",
+    "font-src 'self'",
+    "object-src 'none'",
+    "media-src 'self'",
+    "frame-src 'self'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'", // 防止被嵌入 iframe
+    'upgrade-insecure-requests',
+  ].join('; ');
 }
 
 /**
  * 生成推荐的安全响应头
- * @param {Object} options - 配置选项
  * @returns {Object} 安全头部对象
  */
-export function getSecurityHeaders(options = {}) {
-  const {
-    enableCSP = true,
-    enableHSTS = true,
-    enableXFrameOptions = true,
-    enableXContentTypeOptions = true,
-    enableReferrerPolicy = true,
-    cspOptions = {},
-  } = options;
-
-  const headers = {
+export function getSecurityHeaders() {
+  return {
     'X-Content-Type-Options': 'nosniff',
     'X-Frame-Options': 'DENY',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+    'Content-Security-Policy': generateCSP(),
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
   };
-
-  if (enableCSP) {
-    headers['Content-Security-Policy'] = generateCSP(cspOptions);
-  }
-
-  if (enableHSTS) {
-    headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains; preload';
-  }
-
-  if (!enableXFrameOptions) {
-    delete headers['X-Frame-Options'];
-  }
-
-  if (!enableXContentTypeOptions) {
-    delete headers['X-Content-Type-Options'];
-  }
-
-  if (!enableReferrerPolicy) {
-    delete headers['Referrer-Policy'];
-  }
-
-  return headers;
-}
-
-/**
- * 清理用户输入,移除潜在的恶意代码
- * @param {string} input - 用户输入
- * @returns {string} 清理后的字符串
- */
-export function sanitizeInput(input) {
-  if (typeof input !== 'string') {
-    return '';
-  }
-
-  // 移除控制字符(除了换行、制表符等常用字符)
-  let cleaned = input.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
-
-  // 移除零宽字符
-  cleaned = cleaned.replace(/[\u200B-\u200D\uFEFF]/g, '');
-
-  // 限制连续空白字符
-  cleaned = cleaned.replace(/\s{20,}/g, ' '.repeat(5));
-
-  return cleaned;
 }
 
 /**

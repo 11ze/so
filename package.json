@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "npx wrangler dev",
-    "test": "node src/utils/security.test.js",
-    "test:security": "node src/utils/security.test.js"
+    "test": "npm run test:security && npm run test:result",
+    "test:security": "node src/utils/security.test.js",
+    "test:result": "node --import ./register-text-loader.mjs src/result.test.js"
   },
   "keywords": [
     "search",

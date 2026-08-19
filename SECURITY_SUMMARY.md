@@ -90,14 +90,8 @@ const searchInput = document.getElementById("searchInput");
 - `encodeUrlParam()` - 安全地编码 URL 参数
 
 #### 内容安全策略 (CSP)
-- `generateCSP()` - 生成 CSP 头部
+- `generateCSP()` - 生成 CSP 头部（本站固定策略：允许内联脚本/样式，图标开放图片来源）
 - `getSecurityHeaders()` - 生成完整的安全响应头
-
-#### 输入清理
-- `sanitizeInput()` - 清理用户输入
-  - 移除控制字符
-  - 移除零宽字符
-  - 限制连续空白字符
 
 ### 2. 增强 [result.js](src/result.js) 的安全性
 
@@ -146,40 +140,10 @@ if (!isValidIconUrl(icon)) {
 
 #### 客户端安全改进
 
-**前端输入验证**:
-```javascript
-// 验证和清理搜索关键词
-function validateAndCleanQuery(query) {
-  if (!query || typeof query !== 'string') return '';
-
-  let cleaned = query.trim();
-
-  // 限制长度
-  if (cleaned.length > MAX_QUERY_LENGTH) {
-    cleaned = cleaned.substring(0, MAX_QUERY_LENGTH);
-  }
-
-  // 移除潜在的恶意字符
-  const dangerousPatterns = [
-    /<script[^>]*>/gi,
-    /<\/script>/gi,
-    /javascript:/gi,
-    /on\w+\s*=/gi,
-    /<iframe/gi,
-    /<embed/gi,
-    /<object/gi,
-  ];
-
-  for (const pattern of dangerousPatterns) {
-    if (pattern.test(cleaned)) {
-      console.warn('Potentially malicious query detected and rejected');
-      return '';
-    }
-  }
-
-  return cleaned;
-}
-```
+**出口安全策略**（不依赖客户端输入校验，决策见 [docs/adr/0001](docs/adr/0001-零构建单文件产物.md)）:
+- 历史渲染统一走 `textContent` / `createElement`，不执行 HTML
+- 搜索跳转统一走 `encodeURIComponent` 编码
+- 服务端渲染前对关键词二次校验与转义，客户端不设第二套校验规则
 
 **安全的 DOM 操作**:
 ```javascript
@@ -206,23 +170,12 @@ for (const query of history) {
 **安全的搜索执行**:
 ```javascript
 function performSearch() {
-  var searchInput = document.getElementById("searchInput");
-  if (!searchInput) return;
+  const searchInput = document.getElementById(SEARCH_INPUT_ID);
+  if (!searchInput || !searchInput.value) return;
 
-  var rawQuery = searchInput.value;
-  if (!rawQuery || typeof rawQuery !== 'string') return;
-
-  // 验证和清理查询
-  var query = validateAndCleanQuery(rawQuery);
-
-  if (query && query.trim() !== "") {
-    saveSearchHistory(query);
-  }
-
-  // 构建安全的 URL
-  var baseUrl = "{{base}}";
-  var url = baseUrl + encodeURIComponent(query);
-  window.location.href = url;
+  // 只导航不落历史：由服务端接受的落地页在页面加载时保存，
+  // 避免把服务端必拒的查询（超长/攻击模式）持久化成死条目
+  window.location.href = '/?q=' + encodeURIComponent(searchInput.value.trim());
 }
 ```
 
@@ -231,22 +184,11 @@ function performSearch() {
 添加完整的安全响应头:
 
 ```javascript
-const securityHeaders = getSecurityHeaders({
-  enableCSP: true,
-  enableHSTS: true,
-  enableXFrameOptions: true,
-  enableXContentTypeOptions: true,
-  enableReferrerPolicy: true,
-  cspOptions: {
-    allowInlineScripts: true,
-    allowInlineStyles: true,
-    allowEval: false,
-    imgSources: ["*", "data:"],
-    scriptSources: ["'self'"],
-    styleSources: ["'self'", "'unsafe-inline'"],
-    connectSources: ["'self'"],
-  },
-});
+// 模块级计算一次，fetch 内直接复用
+const SECURITY_HEADERS = {
+  'content-type': 'text/html;charset=UTF-8',
+  ...getSecurityHeaders(),
+};
 ```
 
 **生成的安全响应头包括**:

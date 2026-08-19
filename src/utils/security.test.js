@@ -6,31 +6,15 @@
 import {
   escapeHtml,
   escapeHtmlAttribute,
+  escapeJsonForScript,
   validateAndCleanKeyword,
   isValidUrl,
   encodeUrlParam,
   generateCSP,
   getSecurityHeaders,
-  sanitizeInput,
   isValidIconUrl,
 } from './security.js';
-
-// 测试辅助函数
-function assert(condition, message) {
-  if (!condition) {
-    throw new Error(`Assertion failed: ${message}`);
-  }
-}
-
-function test(name, fn) {
-  try {
-    fn();
-    console.log(`✓ ${name}`);
-  } catch (error) {
-    console.error(`✗ ${name}`);
-    console.error(`  ${error.message}`);
-  }
-}
+import { assert, test, finish } from './test-harness.js';
 
 // HTML 转义测试
 test('escapeHtml should escape special characters', () => {
@@ -42,6 +26,14 @@ test('escapeHtml should escape special characters', () => {
 
 test('escapeHtml should handle empty string', () => {
   assert(escapeHtml('') === '', 'Should handle empty string');
+});
+
+// JSON 数据岛转义测试
+test('escapeJsonForScript should escape < to prevent script breakout', () => {
+  const json = escapeJsonForScript({ evil: '</script>' });
+  assert(!json.includes('</script'), 'Should not contain closable tag sequence');
+  assert(json.includes('\\u003C'), 'Should escape < as \\u003C');
+  assert(JSON.parse(json).evil === '</script>', 'Should preserve JSON semantics');
 });
 
 test('escapeHtml should handle null', () => {
@@ -62,6 +54,22 @@ test('validateAndCleanKeyword should accept valid input', () => {
   const result = validateAndCleanKeyword('test search');
   assert(result.valid === true, 'Should accept valid input');
   assert(result.cleaned === 'test search', 'Should clean input');
+});
+
+test('validateAndCleanKeyword should accept benign on-word queries', () => {
+  // on 出现在单词中间的普通查询（如 money=100）不应命中 on\w+= 模式
+  ['money=100', 'neon=blue', 'person = manager', 'comparisons=2'].forEach(query => {
+    const result = validateAndCleanKeyword(query);
+    assert(result.valid === true, `Should accept benign query: ${query}`);
+  });
+});
+
+test('validateAndCleanKeyword should reject event-handler patterns', () => {
+  // 事件处理器形态（on 为词首 + =）仍必须拒绝
+  ['onclick=alert(1)', '<img src=x onerror=alert(1)>', 'onload = x'].forEach(query => {
+    const result = validateAndCleanKeyword(query);
+    assert(result.valid === false, `Should reject event handler: ${query}`);
+  });
 });
 
 test('validateAndCleanKeyword should reject XSS attempts', () => {
@@ -131,66 +139,25 @@ test('isValidIconUrl should reject invalid icon URLs', () => {
   assert(isValidIconUrl('data:text/html,<script>') === false, 'Should reject non-image data URI');
 });
 
-// 输入清理测试
-test('sanitizeInput should remove control characters', () => {
-  const input = 'test\x00\x01\x02string';
-  const result = sanitizeInput(input);
-  assert(result === 'teststring', 'Should remove control characters');
-});
-
-test('sanitizeInput should remove zero-width characters', () => {
-  const input = 'test\u200B\u200Cstring';
-  const result = sanitizeInput(input);
-  assert(result === 'teststring', 'Should remove zero-width characters');
-});
-
-test('sanitizeInput should limit consecutive spaces', () => {
-  const input = 'test' + ' '.repeat(30) + 'string';
-  const result = sanitizeInput(input);
-  assert(result === 'test     string', 'Should limit consecutive spaces');
-});
-
 // CSP 生成测试
-test('generateCSP should generate valid CSP', () => {
-  const csp = generateCSP();
-
-  assert(csp.includes("default-src 'self'"), 'Should include default-src');
-  assert(csp.includes('script-src'), 'Should include script-src');
-  assert(csp.includes('style-src'), 'Should include style-src');
-  assert(csp.includes('img-src'), 'Should include img-src');
-  assert(csp.includes("frame-ancestors 'none'"), 'Should include frame-ancestors');
-  assert(csp.includes('upgrade-insecure-requests'), 'Should include upgrade-insecure-requests');
-});
-
-test('generateCSP should respect options', () => {
-  const csp = generateCSP({
-    allowInlineScripts: false,
-    allowEval: false,
-    imgSources: ["'self'"],
-  });
-
-  assert(csp.includes("'unsafe-inline'") === csp.includes('style-src'), 'Should handle inline option');
+test('generateCSP 应输出本站固定策略（允许内联脚本/样式，图标开放图片来源）', () => {
+  assert(
+    generateCSP() ===
+      "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src * data:; connect-src 'self'; font-src 'self'; object-src 'none'; media-src 'self'; frame-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests",
+    'CSP 应与既定策略逐字一致'
+  );
 });
 
 // 安全响应头测试
-test('getSecurityHeaders should include all headers', () => {
+test('getSecurityHeaders 零参返回完整安全头集合', () => {
   const headers = getSecurityHeaders();
 
-  assert(headers['Content-Security-Policy'] !== undefined, 'Should include CSP');
+  assert(headers['Content-Security-Policy'] === generateCSP(), 'CSP 头应等于 generateCSP()');
   assert(headers['X-Content-Type-Options'] === 'nosniff', 'Should include X-Content-Type-Options');
   assert(headers['X-Frame-Options'] === 'DENY', 'Should include X-Frame-Options');
-  assert(headers['Referrer-Policy'] !== undefined, 'Should include Referrer-Policy');
-  assert(headers['Strict-Transport-Security'] !== undefined, 'Should include HSTS');
-});
-
-test('getSecurityHeaders should respect enable options', () => {
-  const headers = getSecurityHeaders({
-    enableHSTS: false,
-    enableXFrameOptions: false,
-  });
-
-  assert(headers['Strict-Transport-Security'] === undefined, 'Should omit HSTS when disabled');
-  assert(headers['X-Frame-Options'] === undefined, 'Should omit X-Frame-Options when disabled');
+  assert(headers['Referrer-Policy'] === 'strict-origin-when-cross-origin', 'Should include Referrer-Policy');
+  assert(headers['Permissions-Policy'] !== undefined, 'Should include Permissions-Policy');
+  assert(headers['Strict-Transport-Security'] === 'max-age=31536000; includeSubDomains; preload', 'Should include HSTS');
 });
 
 // URL 编码测试
@@ -205,5 +172,5 @@ test('encodeUrlParam should handle empty string', () => {
   assert(encodeUrlParam(null) === '', 'Should handle null');
 });
 
-console.log('\n=== 安全测试完成 ===');
-console.log('所有安全功能测试都已通过!');
+finish('安全测试完成');
+

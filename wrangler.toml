@@ -5,6 +5,12 @@ name = "so"
 main = "src/worker.js"
 compatibility_date = "2024-01-01"
 
+# 文本模块导入：模板/样式/客户端脚本以文本内联进单文件页面（零构建，见 docs/adr/0001）
+[[rules]]
+type = "Text"
+globs = ["**/template.html", "**/styles.css", "**/client.js"]
+fallthrough = true
+
 # 本地开发配置
 [env.dev]
 name = "so-dev"

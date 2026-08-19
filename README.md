@@ -23,7 +23,7 @@
 ## 自部署说明
 
 - 打开：<https://dash.cloudflare.com>
-- 部署到 Cloudflare Workers 拿到访问地址（src 里的文件都要添加到 Worker 里）
+- 部署到 Cloudflare Workers 拿到访问地址（推荐 clone 后执行 `npx wrangler deploy`，详见 [docs/adr/0001](docs/adr/0001-零构建单文件产物.md)）
 - 修改 config.js 再部署一次
 
 ![image.png](./images/1.png)
@@ -72,25 +72,31 @@
 so/
 ├── src/
 │   ├── worker.js           # Cloudflare Worker 入口
-│   ├── result.js           # 页面渲染逻辑
+│   ├── result.js           # 页面组装与服务端渲染
+│   ├── template.html       # 页面骨架（含槽位占位符）
+│   ├── styles.css          # 页面样式
+│   ├── client.js           # 客户端脚本（以文本内联）
+│   ├── result.test.js      # 页面渲染测试
 │   ├── config.js           # 搜索引擎配置
 │   └── utils/
 │       ├── security.js     # 安全工具模块
-│       └── security.test.js # 安全测试
-├── images/                 # 项目截图
-├── docs/                   # 文档目录
+│       ├── security.test.js # 安全测试
+│       └── test-harness.js # 自研最小测试框架（两套测试共用）
+├── docs/                   # 文档目录（含 adr/）
+├── text-loader.mjs         # 测试专用文本导入 loader（不参与部署）
+├── register-text-loader.mjs # 测试入口：注册上面的 loader（不参与部署）
 ├── SECURITY.md            # 安全策略文档
 ├── HOW_TO_TEST.md         # 测试说明
-├── wrangler.toml          # Wrangler 配置
+├── wrangler.toml          # Wrangler 配置（含文本模块 rules）
 └── package.json           # 项目配置
 ```
 
 ### 安全测试
 
-运行安全测试(需要支持 ES modules 的环境):
+运行全部测试(安全 + 页面渲染):
 
 ```bash
-node src/utils/security.test.js
+npm test
 ```
 
 ### 自定义搜索引擎

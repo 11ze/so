@@ -1,7 +1,5 @@
 export default {
-  get title() {
-    return 'so';
-  },
+  title: 'so',
 
   // 验证配置 - 统一管理所有验证参数
   validation: {
@@ -11,9 +9,8 @@ export default {
     maxDataUriSize: 100 * 1024, // 图标 data URI 最大大小 (100KB)
   },
 
-  get urls() {
-    // icon 可以是 URL 或 base64
-    return [
+  // icon 可以是 URL 或 base64
+  urls: [
       {
         name: 'Google',
         url: 'https://www.google.com/search?q=%s',
@@ -94,6 +91,5 @@ export default {
         url: 'https://www.iyf.tv/search/%s',
         icon: 'https://www.iyf.tv/favicon.ico',
       },
-    ];
-  },
+  ],
 };
