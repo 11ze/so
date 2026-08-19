@@ -1,68 +1,45 @@
 # so
 
-基于 Cloudflare Workers 实现自己的搜索网站。
+基于 Cloudflare Workers 的搜索聚合站：一次输入，跳转到任意搜索引擎。
 
-## 功能亮点
+## 功能
 
-- 自定义搜索结果
-- 搜索历史管理
+- 自定义搜索引擎列表（`src/config.js`）
+- 搜索历史，数据只存浏览器本地
 - 免服务器部署
-- 所有搜索数据均在浏览器本地存储
-- 玻璃拟态视觉风格
-- 跟随系统的暗色模式
-- **全面的安全防护** (XSS 防护、CSP、输入验证等)
+- 玻璃拟态视觉，跟随系统暗色模式
+- 输入验证、输出转义、CSP 等安全防护
 
-## 网站使用说明
+## 使用
 
-- 输入搜索内容，点击搜索按钮或按下 Enter 键即可搜索
-- 按下 / 键快速聚焦搜索框
-- 点击搜索历史项快速搜索
-- 自动跟随系统主题
-- 作为浏览器搜索引擎，如 <https://so.wangze.tech?q=%s>，并设置关键字为 so
+- 输入关键词，按 Enter 搜索
+- 按 `/` 快速聚焦搜索框
+- 点击搜索历史项重新搜索
+- 可设为浏览器搜索引擎：`https://so.wangze.tech?q=%s`，关键字 `so`（自部署请换成自己的地址）
 
-## 自部署说明
+## 自部署
 
-- 打开：<https://dash.cloudflare.com>
-- 部署到 Cloudflare Workers 拿到访问地址（推荐 clone 后执行 `npx wrangler deploy`，详见 [docs/adr/0001](docs/adr/0001-零构建单文件产物.md)）
-- 修改 config.js 再部署一次
+推荐 clone 后用 wrangler 部署：
 
-![image.png](./images/1.png)
+```bash
+git clone https://github.com/11ze/so.git
+cd so
+npx wrangler deploy
+```
 
-![image.png](./images/2.png)
+部署完成后拿到访问地址；修改 `src/config.js` 里的搜索引擎列表，再部署一次即可。
 
-![image.png](./images/3.png)
+也可以在 Cloudflare 控制台操作，流程如下：
 
-![image.png](./images/4.png)
+![创建 Worker](./images/1.png)
 
-## 安全性
+![在线编辑代码并部署](./images/2.png)
 
-项目实施了全面的安全措施,包括:
+![部署成功，拿到访问地址](./images/3.png)
 
-### 输入验证与清理
-- 所有搜索关键词都经过验证和清理
-- 自动检测和拒绝 XSS 攻击尝试
-- 输入长度限制(最大 500 字符)
-- URL 验证(只允许 HTTP/HTTPS)
+![Worker 设置页](./images/4.png)
 
-### 输出转义
-- HTML 内容自动转义
-- HTML 属性值转义
-- 使用安全的 DOM API(如 textContent)
-
-### 安全响应头
-- Content Security Policy (CSP)
-- X-Content-Type-Options: nosniff
-- X-Frame-Options: DENY
-- Strict-Transport-Security (HSTS)
-- Referrer-Policy
-- Permissions-Policy
-
-### 数据安全
-- localStorage 数据验证
-- 损坏数据自动清理
-- 优雅的错误处理
-
-详细的安全策略请参考 [SECURITY.md](SECURITY.md)
+部署产物为零构建的单文件 HTML，架构决策见 [docs/adr/0001](docs/adr/0001-零构建单文件产物.md)。
 
 ## 开发
 
@@ -71,54 +48,61 @@
 ```
 so/
 ├── src/
-│   ├── worker.js           # Cloudflare Worker 入口
-│   ├── result.js           # 页面组装与服务端渲染
-│   ├── template.html       # 页面骨架（含槽位占位符）
-│   ├── styles.css          # 页面样式
-│   ├── client.js           # 客户端脚本（以文本内联）
-│   ├── result.test.js      # 页面渲染测试
-│   ├── config.js           # 搜索引擎配置
+│   ├── worker.js            # Cloudflare Worker 入口
+│   ├── result.js            # 页面组装与服务端渲染
+│   ├── template.html        # 页面骨架（含槽位占位符）
+│   ├── styles.css           # 页面样式
+│   ├── client.js            # 客户端脚本（以文本内联）
+│   ├── result.test.js       # 页面渲染测试
+│   ├── config.js            # 搜索引擎配置
 │   └── utils/
-│       ├── security.js     # 安全工具模块
+│       ├── security.js      # 安全工具模块
 │       ├── security.test.js # 安全测试
-│       └── test-harness.js # 自研最小测试框架（两套测试共用）
-├── docs/                   # 文档目录（含 adr/）
-├── text-loader.mjs         # 测试专用文本导入 loader（不参与部署）
+│       └── test-harness.js  # 自研最小测试框架（两套测试共用）
+├── docs/                    # 文档目录（含 adr/）
+├── text-loader.mjs          # 测试专用文本导入 loader（不参与部署）
 ├── register-text-loader.mjs # 测试入口：注册上面的 loader（不参与部署）
-├── SECURITY.md            # 安全策略文档
-├── HOW_TO_TEST.md         # 测试说明
-├── wrangler.toml          # Wrangler 配置（含文本模块 rules）
-└── package.json           # 项目配置
+├── SECURITY.md              # 安全策略文档
+├── HOW_TO_TEST.md           # 测试说明
+├── wrangler.toml            # Wrangler 配置（含文本模块 rules）
+└── package.json             # 项目配置
 ```
 
-### 安全测试
-
-运行全部测试(安全 + 页面渲染):
+### 测试
 
 ```bash
 npm test
 ```
 
+包含安全与页面渲染两套测试。手动浏览器测试步骤见 [HOW_TO_TEST.md](HOW_TO_TEST.md)。
+
 ### 自定义搜索引擎
 
-编辑 `src/config.js` 文件,添加或修改搜索引擎配置:
+编辑 `src/config.js`，添加或修改搜索引擎：
 
 ```javascript
 {
   name: '搜索引擎名称',
   url: 'https://example.com/search?q=%s',
-  icon: 'https://example.com/favicon.ico' // 可选
+  icon: 'https://example.com/favicon.ico', // 可选，支持 URL 或 base64
 }
 ```
 
+## 安全性
+
+- 输入验证：关键词长度限制（500 字符）、XSS 模式检测、URL 仅允许 HTTP/HTTPS
+- 输出转义：HTML 内容与属性值转义，优先使用 `textContent` 等安全 DOM API
+- 安全响应头：CSP、`nosniff`、`X-Frame-Options`、HSTS、`Referrer-Policy`、`Permissions-Policy`
+- 本地数据：localStorage 读取验证，损坏数据自动清理
+
+详见 [SECURITY.md](SECURITY.md)。
+
 ## 技术栈
 
-- Cloudflare Workers (Serverless)
-- 原生 JavaScript (无框架依赖)
-- LocalStorage API
-- 现代浏览器 API
+- Cloudflare Workers（Serverless）
+- 原生 JavaScript，零框架、零构建
+- localStorage 存搜索历史
 
 ## 许可证
 
-MIT License
-
+[MIT](LICENSE)
