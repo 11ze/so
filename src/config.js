@@ -73,7 +73,7 @@ export default {
       },
       {
         name: '樱花动漫',
-        url: 'https://www.yinhuadm.cc/search?q=%s',
+        url: 'https://www.yinhuadm.cc/vch/%s.html',
         icon: 'https://www.yinhuadm.cc/favicon.ico',
       },
       {
