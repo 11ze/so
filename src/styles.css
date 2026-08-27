@@ -221,7 +221,7 @@ input[type="text"]::placeholder {
 }
 
 .history-list {
-  max-height: 480px;
+  max-height: 65vh;
   overflow-y: auto;
 }
 

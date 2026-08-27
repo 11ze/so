@@ -5,7 +5,7 @@ export default {
   validation: {
     maxQueryLength: 500, // 搜索关键词最大长度
     minQueryLength: 0, // 搜索关键词最小长度
-    maxHistoryItems: 10, // 搜索历史最大记录数
+    maxHistoryItems: 50, // 搜索历史最大记录数
     maxDataUriSize: 100 * 1024, // 图标 data URI 最大大小 (100KB)
   },
 
