@@ -240,7 +240,7 @@ input[type="text"]::placeholder {
 }
 
 .history-item:hover {
-  background-color: rgba(255, 255, 255, 0.28);
+  background-color: var(--blue-100);
 }
 
 .history-item-text {
@@ -517,7 +517,7 @@ input[type="text"]::placeholder {
   }
 
   .history-item:hover {
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.15);
   }
 
   .history-item-delete:hover {
