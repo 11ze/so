@@ -283,6 +283,9 @@ input[type="text"]::placeholder {
 }
 
 .current-search {
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0 2px 14px;
   border-bottom: 1px solid var(--glass-border);
   margin-bottom: 24px;
@@ -347,7 +350,7 @@ input[type="text"]::placeholder {
   height: 100%;
   padding: 16px;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 16px;
   text-align: left;
   transition: color 0.2s ease;
   position: relative;
@@ -355,8 +358,8 @@ input[type="text"]::placeholder {
 }
 
 .button-icon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   flex-shrink: 0;
   object-fit: contain;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -484,7 +487,7 @@ input[type="text"]::placeholder {
   }
 
   body {
-    background: #202124;
+    background: #171d29;
   }
 
   h1 {
