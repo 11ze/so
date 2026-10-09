@@ -17,14 +17,9 @@ export default {
         icon: 'https://www.google.com/favicon.ico',
       },
       {
-        name: '搜狗',
-        url: 'https://www.sogou.com/web?query=%s',
-        icon: 'https://www.sogou.com/favicon.ico',
-      },
-      {
-        name: '百度',
-        url: 'https://www.baidu.com/s?wd=%s',
-        icon: 'https://www.baidu.com/favicon.ico',
+        name: 'DuckDuckGo',
+        url: 'https://duckduckgo.com/?q=%s&ia=web',
+        icon: 'https://duckduckgo.com/favicon.ico',
       },
       {
         name: 'Bing',
@@ -32,9 +27,9 @@ export default {
         icon: 'https://www.bing.com/favicon.ico',
       },
       {
-        name: '小红书',
-        url: 'https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed',
-        icon: 'https://www.xiaohongshu.com/favicon.ico',
+        name: '搜狗',
+        url: 'https://www.sogou.com/web?query=%s',
+        icon: 'https://www.sogou.com/favicon.ico',
       },
       {
         name: 'Google V2EX',
@@ -47,24 +42,19 @@ export default {
         icon: 'https://www.v2ex.com/favicon.ico',
       },
       {
-        name: '哔哩哔哩',
-        url: 'https://search.bilibili.com/all?keyword=%s',
-        icon: 'https://www.bilibili.com/favicon.ico',
-      },
-      {
         name: 'YouTube',
         url: 'https://www.youtube.com/results?search_query=%s',
         icon: 'https://www.youtube.com/favicon.ico',
       },
       {
-        name: '腾讯视频',
-        url: 'https://v.qq.com/x/search/?q=%s',
-        icon: 'https://v.qq.com/favicon.ico',
+        name: '小红书',
+        url: 'https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed',
+        icon: 'https://www.xiaohongshu.com/favicon.ico',
       },
       {
-        name: '豆瓣',
-        url: 'https://www.douban.com/search?q=%s',
-        icon: 'https://www.douban.com/favicon.ico',
+        name: '哔哩哔哩',
+        url: 'https://search.bilibili.com/all?keyword=%s',
+        icon: 'https://www.bilibili.com/favicon.ico',
       },
       {
         name: 'AGE',
@@ -87,9 +77,9 @@ export default {
         icon: 'https://omofun.in/favicon.ico',
       },
       {
-        name: '爱壹帆',
-        url: 'https://www.iyf.tv/search/%s',
-        icon: 'https://www.iyf.tv/favicon.ico',
+        name: '豆瓣',
+        url: 'https://www.douban.com/search?q=%s',
+        icon: 'https://www.douban.com/favicon.ico',
       },
   ],
 };
