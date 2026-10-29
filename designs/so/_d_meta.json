@@ -1,0 +1,45 @@
+{
+  "type": "design",
+  "designSystems": [],
+  "primaryDesignSystem": null,
+  "assets": {
+    "so 搜索交互原型": {
+      "versions": [
+        {
+          "path": "index.html",
+          "createdAt": "2026-10-29T12:44:00.886Z",
+          "status": "needs-review",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          }
+        },
+        {
+          "path": "compact.html",
+          "createdAt": "2026-10-29T13:20:57.352Z",
+          "status": "needs-review"
+        },
+        {
+          "path": "clean.html",
+          "createdAt": "2026-10-29T13:58:38.187Z",
+          "status": "needs-review",
+          "viewport": {
+            "width": 1440,
+            "height": 900
+          }
+        }
+      ]
+    },
+    "so 视觉审查": {
+      "versions": [
+        {
+          "path": "Feedback - so.html",
+          "createdAt": "2026-10-29T13:16:45.562Z",
+          "status": "needs-review"
+        }
+      ]
+    }
+  },
+  "createdAt": "2026-10-29T12:44:00.893Z",
+  "updatedAt": "2026-10-29T13:58:38.189Z"
+}

@@ -44,6 +44,7 @@ const ASSEMBLY_SLOTS = {
   styles: stylesSource,
   client_script: clientSource,
   client_config: escapeJsonForScript({
+    title: config.title,
     maxHistoryItems: config.validation.maxHistoryItems,
     maxQueryLength: config.validation.maxQueryLength,
   }),
@@ -66,16 +67,24 @@ const BUTTON_PARTS = config.urls
     };
   });
 
-// 空关键词页（首页）在模块加载时预渲染
-const EMPTY_HTML = fillSlots(templateSource, {
-  ...ASSEMBLY_SLOTS,
+// 空页槽位：首页与「被拒绝」页只差 error 一项
+const EMPTY_SLOTS = {
   title: config.title,
   button_list: '',
   current_search: '',
   // 布局归 CSS（.current-search 默认 flex），空页才需要内联隐藏
   current_search_style: 'display: none;',
   keyword: '',
-});
+  error: '',
+};
+
+// 空关键词页（首页）在模块加载时预渲染
+const EMPTY_HTML = fillSlots(templateSource, { ...ASSEMBLY_SLOTS, ...EMPTY_SLOTS });
+
+// 被拒绝的查询：仍返回空页，但把原因写在页面上，避免用户只看到静默回首页
+function renderRejected(errorText) {
+  return fillSlots(templateSource, { ...ASSEMBLY_SLOTS, ...EMPTY_SLOTS, error: escapeHtml(errorText) });
+}
 
 export default {
   fetch(searchText) {
@@ -89,7 +98,8 @@ export default {
     // 使用验证和清理后的关键词
     const keyword = validationResult.valid ? validationResult.cleaned : '';
     if (!keyword) {
-      return EMPTY_HTML;
+      // 被拒（超长/非法字符）时带原因，纯空输入才走无提示的空页
+      return validationResult.valid ? EMPTY_HTML : renderRejected(validationResult.error);
     }
 
     // 使用安全的 URL 编码
@@ -114,6 +124,7 @@ export default {
       current_search: keywordHtml,
       current_search_style: '',
       keyword: escapeHtmlAttribute(keyword),
+      error: '',
     });
   },
 };

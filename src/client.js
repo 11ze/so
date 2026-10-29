@@ -1,6 +1,9 @@
 // 配置由服务端经 template.html 的 JSON 数据岛注入
 const CONFIG = JSON.parse(document.getElementById('client-config').textContent);
 
+// 主题偏好由 template.html 的内联脚本在首屏读取，存储键在 html 元素上单点定义
+const THEME_KEY = document.documentElement.dataset.themeKey;
+
 // 搜索历史管理
 const SEARCH_HISTORY_KEY = 'search_history';
 const SEARCH_INPUT_ID = 'searchInput';
@@ -100,18 +103,29 @@ function renderHistoryDropdown() {
     itemDiv.className = 'history-item';
     itemDiv.dataset.query = encodeURIComponent(query);
 
+    // 重搜动作放在独立 button 上：键盘可聚焦、回车可用，删除按钮仍是它的兄弟节点
+    const queryBtn = document.createElement('button');
+    queryBtn.type = 'button';
+    queryBtn.className = 'history-query';
+    queryBtn.dataset.query = encodeURIComponent(query);
+
     const textSpan = document.createElement('span');
     textSpan.className = 'history-item-text';
     textSpan.textContent = query;
+    queryBtn.appendChild(textSpan);
 
     const deleteBtn = document.createElement('button');
+    deleteBtn.type = 'button';
     deleteBtn.className = 'history-item-delete';
-    deleteBtn.textContent = '×';
+    const deleteIcon = document.createElement('span');
+    deleteIcon.className = 'close-symbol';
+    deleteIcon.setAttribute('aria-hidden', 'true');
+    deleteBtn.appendChild(deleteIcon);
     deleteBtn.dataset.query = encodeURIComponent(query);
     deleteBtn.setAttribute('aria-label', '删除此历史记录');
     deleteBtn.title = '删除此历史记录';
 
-    itemDiv.appendChild(textSpan);
+    itemDiv.appendChild(queryBtn);
     itemDiv.appendChild(deleteBtn);
     historyList.appendChild(itemDiv);
   }
@@ -128,6 +142,7 @@ function showHistoryDropdown() {
   renderHistoryDropdown();
   dropdown.classList.add('show');
   btn.classList.add('active');
+  btn.setAttribute('aria-expanded', 'true');
 }
 
 // 隐藏搜索历史下拉框
@@ -139,6 +154,7 @@ function hideHistoryDropdown() {
 
   dropdown.classList.remove('show');
   btn.classList.remove('active');
+  btn.setAttribute('aria-expanded', 'false');
 }
 
 // 切换搜索历史下拉框显示状态
@@ -182,6 +198,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 监听输入框内容变化
     searchInput.addEventListener("input", toggleClearButton);
+
+    // 服务端拒绝时留下的提示，用户重新输入后清掉
+    const errorDisplay = document.getElementById("error");
+    if (errorDisplay) {
+      searchInput.addEventListener("input", function() {
+        errorDisplay.textContent = "";
+      });
+    }
 
     // 历史下拉框按钮事件
     document.getElementById("historyDropdownBtn").addEventListener("click", function(e) {
@@ -228,12 +252,67 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 });
 
+// 主题切换：按钮标签跟随当前主题，选择写入 localStorage
+function updateThemeToggle() {
+  const toggle = document.getElementById('themeToggle');
+  if (!toggle) return;
+
+  const label = document.documentElement.dataset.theme === 'dark' ? '切换到浅色' : '切换到深色';
+  toggle.setAttribute('aria-label', label);
+  toggle.title = label;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  const toggle = document.getElementById("themeToggle");
+  if (!toggle) return;
+
+  updateThemeToggle();
+
+  toggle.addEventListener("click", function() {
+    const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch (e) {
+      console.error('Failed to save theme:', e);
+    }
+
+    updateThemeToggle();
+  });
+
+  // 没手选过时继续跟随系统，避免页面开着时切系统主题不生效
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(event) {
+    let saved = null;
+    try {
+      saved = localStorage.getItem(THEME_KEY);
+    } catch (e) {}
+
+    if (saved === 'light' || saved === 'dark') return;
+
+    document.documentElement.dataset.theme = event.matches ? 'dark' : 'light';
+    updateThemeToggle();
+  });
+});
+
 // 全局快捷键监听器
 document.addEventListener("keydown", function(e) {
     // "/" 键且不在输入框中时，聚焦搜索框
     if (e.key === "/" && document.activeElement.id !== SEARCH_INPUT_ID) {
         e.preventDefault();
         document.getElementById(SEARCH_INPUT_ID).focus();
+    }
+
+    // Escape 关历史面板并把焦点还给入口
+    if (e.key === "Escape") {
+        const dropdown = document.getElementById("historyDropdown");
+        const trigger = document.getElementById("historyDropdownBtn");
+
+        if (dropdown && dropdown.classList.contains("show")) {
+            e.preventDefault();
+            hideHistoryDropdown();
+            if (trigger) trigger.focus();
+        }
     }
 });
 
@@ -257,6 +336,19 @@ function clearSearch() {
     if (currentSearchDisplay) {
       currentSearchDisplay.style.display = "none";
     }
+
+    // 清空等于回到首页：入口卡片、地址栏、标题一起归位
+    const buttonContainer = document.querySelector(".button-container");
+    if (buttonContainer) {
+      buttonContainer.innerHTML = "";
+    }
+
+    if (window.location.search) {
+      window.history.replaceState(null, "", "/");
+    }
+
+    document.title = CONFIG.title;
+
     toggleClearButton();
 }
 
