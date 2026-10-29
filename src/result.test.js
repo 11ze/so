@@ -114,6 +114,18 @@ test('脚本创建的按钮显式声明 type，表单内不会被当成提交按
   }
 });
 
+// 点历史条目、按回车都曾是 window.location.href 整页重载；现在客户端取同源页面换结果区。
+// 客户端只认页面结构，不复制服务端校验，所以这里守住它要替换的钩子和不再出现的整页跳转
+test('搜索换页在客户端完成，不再整页重载', () => {
+  const html = result.fetch('正常关键词');
+  for (const hook of ['id="currentSearchDisplay"', 'class="current-search-keyword"', 'class="button-container"', 'id="error"']) {
+    assert(html.includes(hook), `结果页应渲染客户端换页依赖的钩子：${hook}`);
+  }
+  assert(!/window\.location\.href\s*=/.test(clientSource), '客户端不应再用赋值 location.href 整页跳到搜索页');
+  assert(clientSource.includes('pushState'), '换页后应用 pushState 更新地址栏');
+  assert(clientSource.includes('popstate'), '前进后退应触发客户端换页');
+});
+
 test('无提交按钮，历史入口只保留时钟图标', () => {
   const html = result.fetch('正常关键词');
   assert(!html.includes('type="submit"'), '页面不应包含提交按钮');

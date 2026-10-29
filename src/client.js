@@ -328,28 +328,39 @@ document.getElementById("clearButton").addEventListener("click", function() {
     clearSearch();
 });
 
-function clearSearch() {
+// 首页状态：没有关键词时入口卡片、当前搜索、提示一起清掉
+function renderEmptyState() {
     const searchInput = document.getElementById(SEARCH_INPUT_ID);
-    searchInput.value = "";
-    searchInput.focus();
+    if (searchInput) searchInput.value = "";
+
+    const errorDisplay = document.getElementById("error");
+    if (errorDisplay) errorDisplay.textContent = "";
+
     const currentSearchDisplay = document.getElementById("currentSearchDisplay");
     if (currentSearchDisplay) {
       currentSearchDisplay.style.display = "none";
     }
 
-    // 清空等于回到首页：入口卡片、地址栏、标题一起归位
     const buttonContainer = document.querySelector(".button-container");
     if (buttonContainer) {
       buttonContainer.innerHTML = "";
     }
 
-    if (window.location.search) {
-      window.history.replaceState(null, "", "/");
-    }
-
     document.title = CONFIG.title;
 
     toggleClearButton();
+}
+
+function clearSearch() {
+    const searchInput = document.getElementById(SEARCH_INPUT_ID);
+
+    renderEmptyState();
+    if (searchInput) searchInput.focus();
+
+    // 清空等于回到首页：地址栏也归位
+    if (window.location.search) {
+      window.history.replaceState(null, "", "/");
+    }
 }
 
 function toggleClearButton() {
@@ -364,9 +375,84 @@ function toggleClearButton() {
 
 function performSearch() {
     const searchInput = document.getElementById(SEARCH_INPUT_ID);
-    if (!searchInput || !searchInput.value) return;
+    if (!searchInput) return;
 
-    // 只导航不落历史：由服务端接受的落地页在 DOMContentLoaded 时保存，
+    // 只导航不落历史：由服务端接受的页面回写，
     // 避免把服务端必拒的查询（超长/攻击模式）持久化成永远搜不出结果的死条目
-    window.location.href = '/?q=' + encodeURIComponent(searchInput.value.trim());
+    navigateSearch(searchInput.value, { push: true });
 }
+
+// 换页只取服务端渲染好的同一份页面，替换结果区，地址栏用 pushState 同步。
+// 校验与渲染仍只在服务端发生，客户端不复制规则（见 docs/adr/0001）
+let pendingSearch = null;
+
+// 把取到页面里的同名节点换进来
+const PAGE_SELECTORS = ["#currentSearchDisplay", ".button-container", "#error"];
+
+// 套用取到的页面；结构对不上就整页都不接，由调用方退回整页导航
+function applySearchPage(doc) {
+    const searchInput = document.getElementById(SEARCH_INPUT_ID);
+    const serverInput = doc.getElementById(SEARCH_INPUT_ID);
+    const pairs = PAGE_SELECTORS.map((selector) => [document.querySelector(selector), doc.querySelector(selector)]);
+
+    if (!searchInput || !serverInput || pairs.some(([current, incoming]) => !current || !incoming)) return false;
+
+    for (const [current, incoming] of pairs) current.replaceWith(incoming);
+
+    document.title = doc.title;
+    searchInput.value = serverInput.value;
+    toggleClearButton();
+
+    if (!isMobileDevice()) searchInput.focus();
+    return true;
+}
+
+async function navigateSearch(query, { push }) {
+    query = query.trim();
+    if (!query) return;
+
+    const url = "/?q=" + encodeURIComponent(query);
+
+    // 连点时后一次作废前一次，避免先发的响应盖掉后发的
+    if (pendingSearch) pendingSearch.abort();
+    const controller = new AbortController();
+    pendingSearch = controller;
+
+    try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+
+        const doc = new DOMParser().parseFromString(await response.text(), "text/html");
+        if (!applySearchPage(doc)) throw new Error("页面结构与客户端约定不一致");
+
+        const target = new URL(url, window.location.href);
+        if (push && target.href !== window.location.href) {
+            window.history.pushState(null, "", target.href);
+        }
+
+        hideHistoryDropdown();
+
+        // 被拒页面里输入框是空的，历史里不该留死条目；前进后退只还原页面，不动历史
+        const serverInput = doc.getElementById(SEARCH_INPUT_ID);
+        const keyword = serverInput ? serverInput.value.trim() : "";
+        if (push && keyword) saveSearchHistory(keyword);
+    } catch (error) {
+        if (error.name === "AbortError") return;
+
+        // 离线、Worker 出错、结构变更时不让点击没反应：退回整页导航
+        window.location.assign(url);
+    } finally {
+        if (pendingSearch === controller) pendingSearch = null;
+    }
+}
+
+// 前进后退以地址栏里的 q 为准，空 q 回到首页
+window.addEventListener("popstate", function() {
+    const query = new URLSearchParams(window.location.search).get("q") || "";
+
+    if (query) {
+        navigateSearch(query, { push: false });
+    } else {
+        renderEmptyState();
+    }
+});
