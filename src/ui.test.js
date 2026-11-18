@@ -307,7 +307,7 @@ async function main() {
       assert(state.hintText.includes('从一个关键词开始'), '提示标题应存在');
       assert(state.hintText.includes('一次输入，选一个站点继续搜'), '提示应说明选站点的入口流程');
       assert(!state.hasRecent, '不应再渲染最近搜索');
-      assert(state.topbarTop <= 1, `页头应贴顶，实际 ${state.topbarTop}`);
+      assert(state.topbarTop === 24, `页头应有 24px 顶部留白，实际 ${state.topbarTop}`);
       assert(state.searchTop < 120, `搜索框应靠上，实际 ${state.searchTop}`);
       assert(state.hintCenter > 900 * 0.45 && state.hintCenter < 900 * 0.7, `提示应落在空白区中部，实际 ${state.hintCenter}`);
       assert(!state.overflow, '1440 不应横向溢出');
@@ -398,9 +398,11 @@ async function main() {
       const state = await evaluate(cdp, `(() => {
         const hint = document.querySelector('.empty-hint');
         const sub = document.querySelector('.empty-hint-sub');
+        const topbar = document.querySelector('.topbar').getBoundingClientRect();
         const hintBox = hint.getBoundingClientRect();
         const subBox = sub.getBoundingClientRect();
         return {
+          topbarTop: Math.round(topbar.top),
           hintDisplay: getComputedStyle(hint).display,
           hintText: hint.innerText.replace(/\\s+/g, ' ').trim(),
           hintCenter: Math.round(hintBox.top + hintBox.height / 2),
@@ -409,6 +411,7 @@ async function main() {
           overflow: document.documentElement.scrollWidth > innerWidth,
         };
       })()`);
+      assert(state.topbarTop === 16, `390 页头应有 16px 顶部留白，实际 ${state.topbarTop}`);
       assert(state.hintDisplay === 'flex', '窄屏空态提示应显示');
       assert(state.hintText.includes('一次输入，选一个站点继续搜'), '窄屏提示文案应存在');
       assert(state.subRight <= state.width, `提示不应超出视口，实际 ${state.subRight}/${state.width}`);

@@ -75,7 +75,7 @@ a:focus-visible {
   width: 100%;
   max-width: 976px;
   margin: 0 auto;
-  padding: 0 48px 56px;
+  padding: 24px 48px 56px;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -576,7 +576,7 @@ input[type="text"]::placeholder {
 
 @media (max-width: 700px) {
   .container {
-    padding: 0 24px 40px;
+    padding: 24px 24px 40px;
   }
 
   .search-container {
@@ -594,7 +594,7 @@ input[type="text"]::placeholder {
   }
 
   .container {
-    padding: 0 16px 40px;
+    padding: 16px 16px 40px;
   }
 
   .topbar {
