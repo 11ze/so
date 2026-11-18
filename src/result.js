@@ -64,12 +64,14 @@ const BUTTON_PARTS = config.urls
       valid,
       iconHtml: getIconHtml(resource.icon || ''),
       nameHtml: escapeHtml(resource.name),
+      group: typeof resource.group === 'string' && resource.group.trim() ? resource.group.trim() : '其他',
     };
   });
 
-// 空页槽位：首页与「被拒绝」页只差 error 一项
+// 空页槽位：首页与「被拒绝」页只差 error 与容器标记
 const EMPTY_SLOTS = {
   title: config.title,
+  container_class: ' is-empty',
   button_list: '',
   current_search: '',
   // 布局归 CSS（.current-search 默认 flex），空页才需要内联隐藏
@@ -83,7 +85,7 @@ const EMPTY_HTML = fillSlots(templateSource, { ...ASSEMBLY_SLOTS, ...EMPTY_SLOTS
 
 // 被拒绝的查询：仍返回空页，但把原因写在页面上，避免用户只看到静默回首页
 function renderRejected(errorText) {
-  return fillSlots(templateSource, { ...ASSEMBLY_SLOTS, ...EMPTY_SLOTS, error: escapeHtml(errorText) });
+  return fillSlots(templateSource, { ...ASSEMBLY_SLOTS, ...EMPTY_SLOTS, container_class: '', error: escapeHtml(errorText) });
 }
 
 export default {
@@ -104,25 +106,32 @@ export default {
 
     // 使用安全的 URL 编码
     const encodeSearchText = encodeUrlParam(keyword);
-    const buttonList = [];
+    const groups = new Map();
 
     for (const part of BUTTON_PARTS) {
       if (!part.valid) {
         continue;
       }
-      buttonList.push(
-        `<div class="button"><a href="${escapeHtmlAttribute(part.urlTemplate.replace('%s', encodeSearchText))}" target="_blank" rel="noopener noreferrer">${part.iconHtml}<span class="button-text">${part.nameHtml}</span></a></div>`
-      );
+      const card = `<div class="button"><a href="${escapeHtmlAttribute(part.urlTemplate.replace('%s', encodeSearchText))}" target="_blank" rel="noopener noreferrer">${part.iconHtml}<span class="button-text">${part.nameHtml}</span></a></div>`;
+      if (!groups.has(part.group)) groups.set(part.group, []);
+      groups.get(part.group).push(card);
     }
+
+    const buttonList = [...groups].map(
+      ([group, cards]) =>
+        `<section class="engine-group"><h2 class="engine-group-title">${escapeHtml(group)}</h2><div class="engine-grid">${cards.join('')}</div></section>`
+    );
 
     const keywordHtml = escapeHtml(keyword);
     return fillSlots(templateSource, {
       ...ASSEMBLY_SLOTS,
       title: config.title + ' - ' + keywordHtml,
+      container_class: '',
       button_list: buttonList.join('\n'),
       // label/keyword 双 span 结构在模板里，槽位只传转义后的关键词
       current_search: keywordHtml,
-      current_search_style: '',
+      // 输入值等于已提交值时不重复显示；客户端在输入偏离后放开
+      current_search_style: 'display: none;',
       keyword: escapeHtmlAttribute(keyword),
       error: '',
     });

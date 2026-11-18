@@ -1,8 +1,15 @@
 # so 搜索交互原型
 
-独立设计稿，入口为 `index.html`。保留蓝色主色，使用浅底、细边框和搜索引擎卡片；移除标语、快捷键说明、页脚提示和空态介绍；没有修改 `src/`。
+独立设计稿。当前稿为 `clean.html`；`index.html`、`compact.html`、`Feedback - so.html` 已移到 `archive/`，不再维护。保留蓝色主色，使用浅底、细边框和搜索引擎卡片；移除标语、快捷键说明、页脚提示和空态介绍。
+
+2026-11-18：空态改为整组居中，并在搜索框下列出最近 5 条搜索；入口按综合／社区／影音／动漫分组；当前搜索默认隐藏、编辑时出现；历史面板加“清空”，删除键改为 44px；主题按钮统一为 44px 描边。`clean.html` 与 `src/` 已同步；其余三份原型已归档。
 
 设计依据：`src/template.html`、`src/styles.css`、`src/client.js`、`src/config.js`。输入校验代码来自 `src/utils/security.js`，引擎清单取自当前配置。使用本机字体，网站图标按原配置下载至 assets/，保持原色，无滤镜和远程资源依赖。原型为静态快照，之后调整正式配置时不会自动同步。
+
+
+## 归档
+
+`archive/index.html`、`archive/compact.html`、`archive/Feedback - so.html` 是历史快照，保留作对照，不再维护；空态、清空 bug 和入口布局都停在旧版。归档页的资源引用已改为 `../assets/`，可用同一个静态服务器打开。`archive/Feedback README.md` 是当时的人工审查说明。
 
 ## 预览
 
@@ -12,13 +19,13 @@
 python3 -m http.server 4311 --bind 127.0.0.1 --directory designs
 ```
 
-访问 http://127.0.0.1:4311/so-redesign/index.html 。原型历史使用 `so_design_search_history`，与正式页面隔离。
+访问 http://127.0.0.1:4311/so/clean.html 。原型历史使用 `so_design_search_history`，与正式页面隔离。
 
 ## 重复验证
 
-1. 首页只显示标识、搜索框和历史入口；输入 `Cloudflare Workers` 并回车，显示 14 个搜索入口，地址栏带 `q`。
+1. 首页只显示标识、搜索框、最近搜索和历史入口；点最近搜索直接重搜。输入 `Cloudflare Workers` 并回车，按“综合／社区／影音／动漫”四组显示 14 个入口，地址栏带 `q`；默认不显示“当前搜索”。
 2. 输入 `中文 & 空格` 并搜索，检查 Google 链接包含 `q=%E4%B8%AD%E6%96%87%20%26%20%E7%A9%BA%E6%A0%BC`。
-3. 打开搜索历史，点击历史项重新搜索；删除测试记录，面板应保持展开，全部删除后显示“暂无搜索历史”。刷新后检查保留的历史项。
+3. 打开搜索历史，点击历史项重新搜索；删除测试记录，面板应保持展开，全部删除后显示“暂无搜索历史”。标题右侧“清空”点两次清空全部历史，面板保持展开；删除键点击区域 44px。刷新后检查保留的历史项。
 4. 清空按钮应清空输入并聚焦搜索框；离开输入框后按 `/` 应聚焦；历史面板打开时按 Escape 应收起。
 5. 输入 501 个字符并提交，应提示长度限制；输入 `<script>` 应提示非法字符。
 6. 在 390px 和桌面宽度检查布局，页面不应出现水平滚动；系统切换暗色后检查文字、搜索框与卡片对比度。
@@ -27,7 +34,7 @@ python3 -m http.server 4311 --bind 127.0.0.1 --directory designs
 
 已执行：回车搜索、14 个入口、中文与特殊字符编码、清空、历史删除及空态、历史重新搜索、501 字符拒绝；390px 截图与横向溢出检查；浏览器无警告及错误日志；`npm test` 通过。深浅色切换、刷新后主题记忆、14 个图标加载和无滤镜显示均已在浏览器验证；第三方网站可用性未验证。
 
-搜索换页的重复压栈已与正式页对齐：`search()` 在目标地址与当前地址相同时不调用 `pushState`，四份原型（`index.html`、`clean.html`、`compact.html`、`Feedback - so.html`）同改。用 headless Chrome 逐页验证首次搜索、重复搜索、点历史条目、前进后退、501 字符拒绝共 19 项，四页全过。静态原型跳过 Red → Green，靠浏览器行为验证。
+搜索换页的重复压栈已与正式页对齐：`search()` 在目标地址与当前地址相同时不调用 `pushState`，当时四份原型（`index.html`、`clean.html`、`compact.html`、`Feedback - so.html`）同改；现在历史版本在 `archive/`。用 headless Chrome 逐页验证首次搜索、重复搜索、点历史条目、前进后退、501 字符拒绝共 19 项，四页全过。静态原型跳过 Red → Green，靠浏览器行为验证。
 
 设计稿采用浏览器操作验证，未执行自动化测试先行的 Red → Green。原有测试覆盖正式页面，不能替代设计稿的交互验证。
 
@@ -45,7 +52,7 @@ python3 -m http.server 4311 --bind 127.0.0.1 --directory designs
 - `assets/icon-1.ico`：DuckDuckGo，https://duckduckgo.com/favicon.ico
 - `assets/icon-2.ico`：Bing，https://www.bing.com/favicon.ico
 - `assets/icon-3.ico`：搜狗，https://www.sogou.com/favicon.ico
-- `assets/icon-4.ico`：Google V2EX，https://www.google.com/favicon.ico
+- `assets/icon-4.ico`：旧 Google V2EX 图标，当前稿不用；归档页仍引用。现行 V2EX · Google 复用 `assets/icon-5.ico`（https://www.v2ex.com/favicon.ico）
 - `assets/icon-5.ico`：SOV2EX，https://www.v2ex.com/favicon.ico
 - `assets/icon-6.ico`：YouTube，https://www.youtube.com/favicon.ico
 - `assets/icon-7.ico`：小红书，https://www.xiaohongshu.com/favicon.ico
@@ -68,11 +75,11 @@ Favicon 恢复最初的 `0 0 24 24` viewBox。纯静态尺寸调整未执行 Red
 
 搜索引擎卡片的文字为 15px、网站图标为 24×24px；卡片尺寸与间距保持原样。纯展示调整不执行 Red → Green，按桌面及窄屏浏览器布局复查。
 
-引擎列表上方保留“当前搜索”及已提交关键词；编辑输入框时该内容不变，提交后更新，清空输入后隐藏。纯展示恢复未执行 Red → Green。验证：搜索 A 后将输入改成 B，提交前仍应显示 A，提交后显示 B。
+“当前搜索”默认隐藏，只在输入值与已提交值不同时出现；关键词用正文色，避免看起来像链接。验证：搜索 A 后将输入改成 B，该行出现并显示 A；改回 A 后消失；提交 B 后隐藏并更新结果。纯展示调整未执行 Red → Green。
 
 ## 紧凑版
 
-入口 `compact.html`，预览 http://127.0.0.1:4311/so/compact.html 。`index.html` 保留作对照。
+入口 `archive/compact.html`，预览 http://127.0.0.1:4311/so/archive/compact.html 。`archive/index.html` 保留作对照。
 
 页头高 60px（标识上下各留 13px），搜索区顶部间距 6px，标识到搜索框共 19px。结果区距搜索框 8px，引擎卡片高至少 58px、网格间距 8px、圆角 9px。
 
@@ -88,11 +95,13 @@ Favicon 恢复最初的 `0 0 24 24` viewBox。纯静态尺寸调整未执行 Red
 
 ## 精简版
 
-入口 `clean.html`，预览 http://127.0.0.1:4311/so/clean.html 。`compact.html`、`index.html` 保留作对照。
+入口 `clean.html`，预览 http://127.0.0.1:4311/so/clean.html 。`compact.html`、`index.html` 已归档到 `archive/`。
 
 整体缩小一档：页头 48px、标识 26px、搜索框高 50px（输入 15px、圆角 12px）、卡片高至少 46px（文字 13px、图标 16px、圆角 8px）、网格间距 8px。
 
-去掉“搜索”按钮，回车提交。搜索历史由文字按钮改成图标按钮，放在搜索框右侧，与搜索框同高，宽 46px（≤480px 时 44px），点击在下方展开面板。“当前搜索”独占一行，13px，与卡片文字同级；标签用次要色，关键词用站名蓝（`--accent`），左内缩 10px 与卡片图标左缘对齐。搜索框到该行 16px，该行到卡片 14px。
+去掉“搜索”按钮，回车提交。搜索历史由文字按钮改成图标按钮，放在搜索框右侧，与搜索框同高，宽 46px（≤480px 时 44px），点击在下方展开面板。“当前搜索”默认隐藏，输入值偏离已提交值时显示；13px，关键词用正文色，左内缩 10px 与卡片图标左缘对齐。搜索框到该行 16px。
+
+入口按“综合／社区／影音／动漫”分组，组标题 12px 次要色；组内 8px、组间 20px，结果区距搜索框 14px。历史标题右侧“清空”需二次确认、热区 44px；删除键 44px；主题按钮 44px 描边，与历史入口同一套。
 
 标识左侧内缩与主题按钮右侧内缩相同：桌面 6px、窄屏 2px，都从 880px 内容区边缘起算。主题按钮与搜索历史图标共用一条垂直中线。
 
@@ -100,7 +109,7 @@ Favicon 恢复最初的 `0 0 24 24` viewBox。纯静态尺寸调整未执行 Red
 
 仅调整展示，跳过 Red → Green；复用前面的搜索、历史和主题验证步骤。
 
-精简版已验证：1440、1024、768、500、481、414、390、360、320px 无横向溢出；搜索框 50px、卡片 46px 在各宽度一致；回车提交、14 个入口、中文与特殊字符编码、清空、历史展开与 Esc 收起、历史删除及空态、斜杠聚焦、501 字符与危险字符拦截、前进后退还原、主题记忆通过；历史入口无文字、页面无提交按钮；浏览器无警告及错误日志。
+精简版已验证：1440、1024、768、500、481、414、390、360、320px 无横向溢出；搜索框 50px、卡片 46px 在各宽度一致；回车提交、四组顺序与 14 个入口、当前搜索显示与隐藏、中文与特殊字符编码、清空、历史展开与 Esc 收起、历史删除及空态、历史一次清空、斜杠聚焦、501 字符与危险字符拦截、前进后退还原、主题记忆通过；历史入口无文字、页面无提交按钮；浏览器无警告及错误日志。
 
 预览图：`clean-preview.png`（1440×900）、`clean-mobile.png`（390×844，2 倍像素）。
 

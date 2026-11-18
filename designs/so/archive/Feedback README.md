@@ -1,8 +1,8 @@
 # so 视觉审查
 
-入口：`Feedback - so.html`；以 `index.html` 的副本为底稿，原稿未修改。批注数据在 `feedback-views.js`，渲染器为 baoyu-design 提供的 `data-overlay.js`，图标复用同目录 assets。
+入口：`Feedback - so.html`（同目录）；以 `index.html` 的副本为底稿，原稿未修改。批注数据在 `feedback-views.js`，渲染器为 baoyu-design 提供的 `data-overlay.js`，页面内图标复用 `../assets`。
 
-在仓库根目录运行 `python3 -m http.server 4311 --bind 127.0.0.1 --directory designs`，访问 http://127.0.0.1:4311/so/Feedback%20-%20so.html 。
+在仓库根目录运行 `python3 -m http.server 4311 --bind 127.0.0.1 --directory designs`，访问 http://127.0.0.1:4311/so/archive/Feedback%20-%20so.html 。
 
 重复验证：默认显示搜索示例和 14 个入口；切换 Showing 后的三组选项，检查批注锚点、完整文字与视图切换；切换浅深色，检查可读性。副本历史和主题使用独立的 so_review 存储键。
 

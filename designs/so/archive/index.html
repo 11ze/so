@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <title>so</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
 <script>
-const themeKey = 'so_review_theme';
+const themeKey = 'so_design_theme';
 let savedTheme;
 try { savedTheme = localStorage.getItem(themeKey); } catch {}
 document.documentElement.dataset.theme = ['light', 'dark'].includes(savedTheme)
@@ -25,24 +25,20 @@ main{width:100%;max-width:880px;margin:0 auto;padding:88px 0 64px;flex:1}.intro{
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 .engine-mark{background:transparent}.engine-mark img{width:24px;height:24px;object-fit:contain}.theme-toggle{display:flex;align-items:center;justify-content:center;width:44px;min-height:44px;padding:0;background:transparent;border:1px solid var(--line);border-radius:10px;font-size:15px;line-height:1}.theme-symbol{width:1em;height:1em;border:1.5px solid currentColor;border-radius:50%;background:linear-gradient(90deg,currentColor 50%,transparent 50%)}.theme-toggle:hover{background:var(--hover)}
 .clear,.history-delete{display:flex;align-items:center;justify-content:center}.close-symbol{display:block;position:relative;width:20px;height:20px;flex:0 0 20px}.close-symbol:before,.close-symbol:after{content:"";position:absolute;left:1px;top:9px;width:18px;height:1.5px;border-radius:1px;background:currentColor;transform:rotate(45deg)}.close-symbol:after{transform:rotate(-45deg)}
-
-.review-layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:28px;max-width:1540px;margin:auto;padding:32px 24px}.review-intro{padding:8px 0;font-size:14px;line-height:1.8}.review-intro h1{font-size:30px;line-height:1.4;letter-spacing:-.6px;margin:16px 0 24px}.review-kicker{font-size:11px;color:var(--muted);letter-spacing:1px}.review-intro ol{padding-left:20px}.review-intro li{margin:14px 0}.review-note{color:var(--muted);font-size:12px}.review-intro a{color:var(--accent);text-decoration:underline}.review-layout data-overlay{min-width:0;border:1px solid var(--line);border-radius:16px;overflow:hidden}.review-layout .shell{padding:0 24px;min-height:1100px}.review-layout .topbar{min-height:104px}.review-layout main{padding-top:88px}@media(max-width:950px){.review-layout{grid-template-columns:1fr;padding:20px 12px;gap:20px}.review-intro{max-width:680px}.review-intro h1 br{display:none}.review-layout .shell{min-height:1250px}} 
 </style>
 </head>
 <body>
-<div class="review-layout"><aside class="review-intro"><p><a href="compact.html?q=Cloudflare+Workers">查看调整后的紧凑版 ↗</a></p><p class="review-note">以下批注保留原稿作为对照。紧凑版已调整页头、间距、卡片和图标尺寸，仍待你确认效果。</p><p class="review-kicker">SO · 视觉审查 · 2026-10-29</p><h1>页面的分量<br>超过了内容</h1><p>用途：自己日常搜索，也部署到公网。重点：布局、留白、字号、图标。</p><p>搜索框、历史入口、引擎列表之间的距离偏大，卡片又偏厚，操作被拆成了几块。</p><ol><li><b>布局与留白</b>：先收拢搜索区域，再减轻卡片。</li><li><b>字号与图标</b>：建立主次，按视觉大小校准。</li><li><b>值得保留</b>：蓝色、原色图标和直接的操作。</li></ol><p class="review-note">右侧为原稿副本，搜索示例为 Cloudflare Workers。切换 Showing 后的选项查看各组批注。批注中的尺寸是待试的方向，尚未应用。</p><a href="index.html?q=Cloudflare+Workers">打开原稿 ↗</a></aside>
-<data-overlay src="./feedback-views.js" controls="on">
 <!-- 独立交互设计稿。依据 src/template.html、styles.css、client.js 和 config.js；保留输入→生成入口→选择引擎的流程。蓝色取自现有样式，使用本机字体，不加载远程资源。 -->
 <div class="shell" data-screen-label="so 搜索">
-<header class="topbar" data-metric-id="header"><a class="wordmark" href="./index.html" aria-label="so 首页">so</a><button id="themeToggle" data-metric-id="theme" class="theme-toggle" type="button" aria-label="切换到深色"><span class="theme-symbol" aria-hidden="true"></span></button></header>
+<header class="topbar"><a class="wordmark" href="./index.html" aria-label="so 首页">so</a><button id="themeToggle" class="theme-toggle" type="button" aria-label="切换到深色"><span class="theme-symbol" aria-hidden="true"></span></button></header>
 <main>
 <div class="search-area">
-<form id="searchForm" data-metric-id="search" class="searchbox" role="search"><span class="search-symbol" aria-hidden="true"></span><input id="searchInput" name="q" aria-label="搜索关键词" aria-describedby="error" placeholder="搜索…" autocomplete="off" enterkeyhint="search"><button id="clearButton" class="clear" type="button" aria-label="清空关键词" hidden><span class="close-symbol" aria-hidden="true"></span></button><button class="submit" type="submit">搜索</button></form>
+<form id="searchForm" class="searchbox" role="search"><span class="search-symbol" aria-hidden="true"></span><input id="searchInput" name="q" aria-label="搜索关键词" aria-describedby="error" placeholder="搜索…" autocomplete="off" enterkeyhint="search"><button id="clearButton" class="clear" type="button" aria-label="清空关键词" hidden><span class="close-symbol" aria-hidden="true"></span></button><button class="submit" type="submit">搜索</button></form>
 <p id="error" class="error" role="alert" hidden></p>
-<div data-metric-id="history" class="under-search"><button class="history-trigger" id="historyTrigger" type="button" aria-expanded="false" aria-controls="historyPanel"><span class="clock" aria-hidden="true"></span>搜索历史</button></div>
+<div class="under-search"><button class="history-trigger" id="historyTrigger" type="button" aria-expanded="false" aria-controls="historyPanel"><span class="clock" aria-hidden="true"></span>搜索历史</button></div>
 <section id="historyPanel" class="history-panel" aria-label="搜索历史" hidden><div class="history-heading">最近搜索</div><div id="historyList" class="history-list"></div></section>
 </div>
-<section class="results" id="results" aria-label="搜索引擎" hidden><div id="currentSearch" data-metric-id="keyword" class="current-search">当前搜索 <span id="currentKeyword"></span></div><div class="engine-grid" id="engines" data-metric-id="engines"></div></section>
+<section class="results" id="results" aria-label="搜索引擎" hidden><div id="currentSearch" class="current-search">当前搜索 <span id="currentKeyword"></span></div><div class="engine-grid" id="engines"></div></section>
 </main>
 </div>
 <script>
@@ -305,7 +301,7 @@ function isValidIconUrl(iconUrl, options = {}) {
   return isValidUrl(trimmed);
 }
 
-const engines = [{"name":"Google","url":"https://www.google.com/search?q=%s","icon":"assets/icon-0.ico"},{"name":"DuckDuckGo","url":"https://duckduckgo.com/?q=%s&ia=web","icon":"assets/icon-1.ico"},{"name":"Bing","url":"https://www.bing.com/search?q=%s","icon":"assets/icon-2.ico"},{"name":"搜狗","url":"https://www.sogou.com/web?query=%s","icon":"assets/icon-3.ico"},{"name":"Google V2EX","url":"https://www.google.com/search?q=site:v2ex.com/t%20%s","icon":"assets/icon-4.ico"},{"name":"SOV2EX","url":"https://www.sov2ex.com/?q=%s&ref=opensearch","icon":"assets/icon-5.ico"},{"name":"YouTube","url":"https://www.youtube.com/results?search_query=%s","icon":"assets/icon-6.ico"},{"name":"小红书","url":"https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed","icon":"assets/icon-7.ico"},{"name":"哔哩哔哩","url":"https://search.bilibili.com/all?keyword=%s","icon":"assets/icon-8.ico"},{"name":"AGE","url":"https://www.agedm.io/search?query=%s","icon":"assets/icon-9.ico"},{"name":"樱花动漫","url":"https://www.yinhuadm.cc/vch/%s.html","icon":"assets/icon-10.ico"},{"name":"樱之空动漫","url":"https://www.skr2.cc/vodsearch/-------------/?wd=%s","icon":"assets/icon-11.ico"},{"name":"OmoFun","url":"https://omofun.in/vod/search.html?wd=%s","icon":"assets/icon-12.ico"},{"name":"豆瓣","url":"https://www.douban.com/search?q=%s","icon":"assets/icon-13.ico"}];
+const engines = [{"name":"Google","url":"https://www.google.com/search?q=%s","icon":"../assets/icon-0.ico"},{"name":"DuckDuckGo","url":"https://duckduckgo.com/?q=%s&ia=web","icon":"../assets/icon-1.ico"},{"name":"Bing","url":"https://www.bing.com/search?q=%s","icon":"../assets/icon-2.ico"},{"name":"搜狗","url":"https://www.sogou.com/web?query=%s","icon":"../assets/icon-3.ico"},{"name":"Google V2EX","url":"https://www.google.com/search?q=site:v2ex.com/t%20%s","icon":"../assets/icon-4.ico"},{"name":"SOV2EX","url":"https://www.sov2ex.com/?q=%s&ref=opensearch","icon":"../assets/icon-5.ico"},{"name":"YouTube","url":"https://www.youtube.com/results?search_query=%s","icon":"../assets/icon-6.ico"},{"name":"小红书","url":"https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed","icon":"../assets/icon-7.ico"},{"name":"哔哩哔哩","url":"https://search.bilibili.com/all?keyword=%s","icon":"../assets/icon-8.ico"},{"name":"AGE","url":"https://www.agedm.io/search?query=%s","icon":"../assets/icon-9.ico"},{"name":"樱花动漫","url":"https://www.yinhuadm.cc/vch/%s.html","icon":"../assets/icon-10.ico"},{"name":"樱之空动漫","url":"https://www.skr2.cc/vodsearch/-------------/?wd=%s","icon":"../assets/icon-11.ico"},{"name":"OmoFun","url":"https://omofun.in/vod/search.html?wd=%s","icon":"../assets/icon-12.ico"},{"name":"豆瓣","url":"https://www.douban.com/search?q=%s","icon":"../assets/icon-13.ico"}];
 const themeToggle = document.querySelector('#themeToggle');
 function updateThemeButton() {
   const dark = document.documentElement.dataset.theme === 'dark';
@@ -323,7 +319,7 @@ themeToggle.onclick = () => {
 const input = document.querySelector('#searchInput');
 const panel = document.querySelector('#historyPanel');
 const trigger = document.querySelector('#historyTrigger');
-const historyKey = 'so_review_search_history';
+const historyKey = 'so_design_search_history';
 const maxHistory = 50;
 const maxLength = 500;
 function readHistory(){try{const items=JSON.parse(localStorage.getItem(historyKey)||'[]');return Array.isArray(items)?items.filter(item=>typeof item==='string'&&item.trim()&&validateAndCleanKeyword(item).valid).slice(0,maxHistory):[];}catch{return [];}}
@@ -339,7 +335,7 @@ function render(query,save=false){
  document.querySelector('#results').hidden=!value;
  document.title=value?'so · '+value:'so';
  const grid=document.querySelector('#engines');grid.replaceChildren();
- if(value){for(const engine of engines){const url=engine.url.replace('%s',encodeURIComponent(value));if(!isValidUrl(url))continue;const link=document.createElement('a');link.className='engine';if(engine.name==='AGE')link.dataset.metricId='icon-example';link.href=url;link.target='_blank';link.rel='noopener noreferrer';const mark=document.createElement('span');mark.className='engine-mark';mark.setAttribute('aria-hidden','true');const icon=document.createElement('img');icon.src=engine.icon;icon.alt='';icon.onerror=()=>{icon.hidden=true;};mark.append(icon);const name=document.createElement('span');name.className='engine-name';name.textContent=engine.name;link.append(mark,name);grid.append(link);}}
+ if(value){for(const engine of engines){const url=engine.url.replace('%s',encodeURIComponent(value));if(!isValidUrl(url))continue;const link=document.createElement('a');link.className='engine';link.href=url;link.target='_blank';link.rel='noopener noreferrer';const mark=document.createElement('span');mark.className='engine-mark';mark.setAttribute('aria-hidden','true');const icon=document.createElement('img');icon.src=engine.icon;icon.alt='';icon.onerror=()=>{icon.hidden=true;};mark.append(icon);const name=document.createElement('span');name.className='engine-name';name.textContent=engine.name;link.append(mark,name);grid.append(link);}}
  if(value&&save)writeHistory([value,...readHistory().filter(item=>item!==value)].slice(0,maxHistory));
  return true;
 }
@@ -352,9 +348,9 @@ trigger.onclick=()=>{if(!panel.hidden){closeHistory();return;}renderHistory();pa
 document.addEventListener('click',event=>{if(!panel.contains(event.target)&&!trigger.contains(event.target))closeHistory();});
 document.addEventListener('keydown',event=>{if(event.key==='/'&&event.target.tagName!=='INPUT'){event.preventDefault();input.focus();}if(event.key==='Escape'&&!panel.hidden){closeHistory();trigger.focus();}});
 window.addEventListener('popstate',()=>{input.value=new URL(location.href).searchParams.get('q')||'';syncClear();render(input.value);});
-input.value=new URL(location.href).searchParams.get('q')||'Cloudflare Workers';
+input.value=new URL(location.href).searchParams.get('q')||'';
 syncClear();render(input.value,!!input.value);
 if(!matchMedia('(pointer:coarse)').matches)input.focus();
 </script>
-</data-overlay></div><script src="./data-overlay.js"></script></body>
+</body>
 </html>

@@ -24,7 +24,7 @@
     </style>
     </head>
     <body>
-    <div class="container">
+    <div class="container{{container_class}}">
         <header class="topbar">
             <h1>so</h1>
             <button id="themeToggle" class="theme-toggle" type="button" aria-label="切换到深色"><span class="theme-symbol" aria-hidden="true"></span></button>
@@ -39,12 +39,16 @@
                 </div>
                 <button type="button" id="historyDropdownBtn" class="history-dropdown-btn" title="搜索历史" aria-label="搜索历史" aria-controls="historyDropdown" aria-expanded="false"><span class="clock" aria-hidden="true"></span></button>
                 <div id="historyDropdown" class="history-dropdown">
-                  <div class="history-heading">最近搜索</div>
+                  <div class="history-heading"><span>最近搜索</span><button type="button" id="clearHistoryBtn" class="history-clear" aria-live="polite" hidden>清空</button></div>
                   <div id="historyList" class="history-list"></div>
                 </div>
               </form>
             </div>
         </div>
+        <section id="recentSearches" class="recent-searches" aria-label="最近搜索" hidden>
+            <div class="recent-searches-heading">最近搜索</div>
+            <div id="recentList" class="recent-list"></div>
+        </section>
         <p id="error" class="error" role="alert">{{error}}</p>
         <div id="currentSearchDisplay" class="current-search" style="{{current_search_style}}"><span class="current-search-label">当前搜索</span><span class="current-search-keyword">{{current_search}}</span></div>
         <div class="button-container">

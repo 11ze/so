@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>so</title>
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<script>
+const themeKey = 'so_review_theme';
+let savedTheme;
+try { savedTheme = localStorage.getItem(themeKey); } catch {}
+document.documentElement.dataset.theme = ['light', 'dark'].includes(savedTheme)
+  ? savedTheme : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+</script>
+<style>
+:root{--accent:#0069ad;--accent-soft:#eef4fb;--bg:#f8fafc;--surface:#fff;--text:#1a3550;--muted:#466a88;--line:#dde6ee;--hover:#f0f6fc;--radius:18px;color-scheme:light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,"SF Pro Text","PingFang SC","Noto Sans SC",sans-serif;line-height:1.7}button,input,a{-webkit-tap-highlight-color:transparent}button,input{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:4px}button{color:inherit}a{color:inherit;text-decoration:none}[hidden]{display:none!important}
+.shell{max-width:1120px;margin:auto;padding:0 48px;min-height:100svh;display:flex;flex-direction:column}.topbar{width:100%;max-width:880px;margin:0 auto;padding:0 12px;display:flex;justify-content:space-between;align-items:center;min-height:104px;border-bottom:1px solid var(--line)}.wordmark{font-size:34px;letter-spacing:-.5px;font-weight:650;color:var(--accent);line-height:1}.brand{display:flex;gap:22px;align-items:center}.brand-note{padding-left:22px;border-left:1px solid var(--line);color:var(--muted);font-size:12px;letter-spacing:2px}.top-note{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:8px}.dot{width:5px;height:5px;background:var(--accent);border-radius:50%}
+main{width:100%;max-width:880px;margin:0 auto;padding:88px 0 64px;flex:1}.intro{margin-bottom:32px}.eyebrow{color:var(--accent);font-size:11px;font-weight:650;letter-spacing:3px;margin:0 0 12px}.intro h1{font-size:clamp(30px,4.5vw,45px);font-weight:600;letter-spacing:-1.7px;line-height:1.35;margin:0 0 13px}.intro p{margin:0;color:var(--muted);font-size:14px}.search-area{position:relative}.searchbox{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px 10px 23px;box-shadow:0 8px 30px rgba(26,53,80,.04);transition:border-color .2s,box-shadow .2s}.searchbox:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px rgba(12,135,214,.08)}.search-symbol{font-size:17px;width:1em;height:1em;flex:0 0 1em;margin-right:6px;color:var(--accent);position:relative}.search-symbol:before{content:"";position:absolute;left:0;top:0;width:.72em;height:.72em;border:1.5px solid currentColor;border-radius:50%}.search-symbol:after{content:"";position:absolute;width:.4em;height:1.5px;background:currentColor;right:0;bottom:.16em;transform:rotate(45deg);border-radius:1px}input{min-width:0;flex:1;background:transparent;border:0;outline:0;color:var(--text);font-size:17px;height:44px}input::placeholder{color:var(--muted)}.clear,.history-trigger{border:0;background:transparent;min-width:44px;min-height:44px;border-radius:10px}.clear{font-size:22px;color:var(--muted)}.clear:hover,.history-trigger:hover{background:var(--hover)}.submit{border:0;border-radius:11px;background:var(--accent);color:#fff;padding:0 19px;min-height:44px;font-size:14px;white-space:nowrap}.submit:hover{filter:brightness(1.1)}.under-search{padding-right:12px;display:flex;justify-content:flex-end;align-items:center;margin-top:8px;color:var(--muted);font-size:12px}.keyboard-hint{display:flex;gap:6px;align-items:center}kbd{font-family:inherit;font-size:11px;border:1px solid var(--line);background:var(--surface);border-radius:4px;padding:0 5px}.history-trigger{font-size:15px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 10px}.clock{width:1em;height:1em;flex:0 0 1em;border:1.5px solid currentColor;border-radius:50%;position:relative}.clock:after{content:"";position:absolute;left:.4em;top:.13em;width:.22em;height:.35em;border-left:1px solid currentColor;border-bottom:1px solid currentColor}.error{font-size:13px;color:#b3261e;margin:8px 0 0}.history-panel{position:absolute;right:0;top:100%;width:min(100%,400px);z-index:5;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 16px 48px rgba(26,53,80,.13);padding:16px}.history-heading{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:0 6px 12px;border-bottom:1px solid var(--line)}.history-heading span{font-size:11px;color:var(--muted)}.history-list{max-height:270px;overflow:auto;padding-top:8px}.history-row{display:flex;gap:8px;align-items:center}.history-row:hover{background:var(--hover);border-radius:8px}.history-query{flex:1;min-width:0;text-align:left;border:0;background:transparent;padding:11px 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}.history-delete{border:0;background:transparent;width:44px;height:44px;color:var(--muted);font-size:19px}.history-empty{padding:24px 8px;color:var(--muted);font-size:13px;text-align:center}
+.results{margin-top:40px}.current-search{display:flex;align-items:baseline;gap:10px;margin-bottom:18px;font-size:13px;color:var(--muted)}#currentKeyword{color:var(--text);font-weight:550;overflow-wrap:anywhere;min-width:0}.result-heading{display:flex;gap:16px;align-items:baseline;justify-content:space-between;margin-bottom:18px}.result-heading h2{margin:0;font-size:13px;font-weight:500;min-width:0;overflow-wrap:anywhere}.keyword{color:var(--accent);font-weight:650}.result-count{color:var(--muted);font-size:11px;white-space:nowrap}.engine-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.engine{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:19px 15px;min-height:79px;transition:transform .15s,border-color .15s,box-shadow .15s}.engine:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 6px 18px rgba(26,53,80,.06)}.engine-mark{display:flex;align-items:center;justify-content:center;width:24px;height:24px;flex-shrink:0;border-radius:9px;background:var(--accent-soft);color:var(--accent);font-size:14px;font-weight:650}.engine-name{font-size:15px;font-weight:550;flex:1;min-width:0;overflow-wrap:anywhere}.empty{margin-top:56px;padding:36px 0;border-top:1px solid var(--line)}.empty h2{font-size:14px;font-weight:550;margin:0 0 8px}.empty p{font-size:13px;color:var(--muted);margin:0;max-width:460px;line-height:1.9}.engine-preview{margin-top:20px;color:var(--muted);font-size:12px;line-height:2;word-spacing:8px}footer{border-top:1px solid var(--line);padding:23px 0 28px;display:flex;justify-content:space-between;gap:16px;color:var(--muted);font-size:11px}.footer-shortcut{display:flex;gap:7px;align-items:center}
+:root[data-theme="dark"]{--accent:#78bef0;--accent-soft:#1b3449;--bg:#101923;--surface:#172330;--text:#e5edf5;--muted:#a1b6c9;--line:#2a3c4e;--hover:#203449;color-scheme:dark}:root[data-theme="dark"] .submit{background:#0069ad;color:#fff}:root[data-theme="dark"] .error{color:#ffb4ab}
+@media(max-width:700px){.shell{padding:0 24px}.topbar{min-height:82px}.top-note{display:none}main{padding:60px 0 48px}.engine-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.engine{padding:15px 12px;gap:8px}.keyboard-hint{visibility:hidden}.intro h1{letter-spacing:-1px}.footer-shortcut{display:none}}
+@media(max-width:480px){.shell{padding:0 20px}.brand-note{font-size:10px}.intro h1{font-size:30px}.intro p{font-size:13px}.searchbox{padding:8px 8px 8px 14px;gap:6px}.search-symbol{font-size:16px;margin-right:5px}input{font-size:16px}.submit{padding:0 14px}.clear{min-width:32px}.engine-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.result-heading{gap:10px}.engine{min-height:76px}.empty{margin-top:40px}footer{font-size:10px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.engine-mark{background:transparent}.engine-mark img{width:24px;height:24px;object-fit:contain}.theme-toggle{display:flex;align-items:center;justify-content:center;width:44px;min-height:44px;padding:0;background:transparent;border:1px solid var(--line);border-radius:10px;font-size:15px;line-height:1}.theme-symbol{width:1em;height:1em;border:1.5px solid currentColor;border-radius:50%;background:linear-gradient(90deg,currentColor 50%,transparent 50%)}.theme-toggle:hover{background:var(--hover)}
+.clear,.history-delete{display:flex;align-items:center;justify-content:center}.close-symbol{display:block;position:relative;width:20px;height:20px;flex:0 0 20px}.close-symbol:before,.close-symbol:after{content:"";position:absolute;left:1px;top:9px;width:18px;height:1.5px;border-radius:1px;background:currentColor;transform:rotate(45deg)}.close-symbol:after{transform:rotate(-45deg)}
+
+.review-layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:28px;max-width:1540px;margin:auto;padding:32px 24px}.review-intro{padding:8px 0;font-size:14px;line-height:1.8}.review-intro h1{font-size:30px;line-height:1.4;letter-spacing:-.6px;margin:16px 0 24px}.review-kicker{font-size:11px;color:var(--muted);letter-spacing:1px}.review-intro ol{padding-left:20px}.review-intro li{margin:14px 0}.review-note{color:var(--muted);font-size:12px}.review-intro a{color:var(--accent);text-decoration:underline}.review-layout data-overlay{min-width:0;border:1px solid var(--line);border-radius:16px;overflow:hidden}.review-layout .shell{padding:0 24px;min-height:1100px}.review-layout .topbar{min-height:104px}.review-layout main{padding-top:88px}@media(max-width:950px){.review-layout{grid-template-columns:1fr;padding:20px 12px;gap:20px}.review-intro{max-width:680px}.review-intro h1 br{display:none}.review-layout .shell{min-height:1250px}} 
+</style>
+</head>
+<body>
+<div class="review-layout"><aside class="review-intro"><p><a href="compact.html?q=Cloudflare+Workers">查看调整后的紧凑版 ↗</a></p><p class="review-note">以下批注保留原稿作为对照。紧凑版已调整页头、间距、卡片和图标尺寸，仍待你确认效果。</p><p class="review-kicker">SO · 视觉审查 · 2026-10-29</p><h1>页面的分量<br>超过了内容</h1><p>用途：自己日常搜索，也部署到公网。重点：布局、留白、字号、图标。</p><p>搜索框、历史入口、引擎列表之间的距离偏大，卡片又偏厚，操作被拆成了几块。</p><ol><li><b>布局与留白</b>：先收拢搜索区域，再减轻卡片。</li><li><b>字号与图标</b>：建立主次，按视觉大小校准。</li><li><b>值得保留</b>：蓝色、原色图标和直接的操作。</li></ol><p class="review-note">右侧为原稿副本，搜索示例为 Cloudflare Workers。切换 Showing 后的选项查看各组批注。批注中的尺寸是待试的方向，尚未应用。</p><a href="index.html?q=Cloudflare+Workers">打开原稿 ↗</a></aside>
+<data-overlay src="./feedback-views.js" controls="on">
+<!-- 独立交互设计稿。依据 src/template.html、styles.css、client.js 和 config.js；保留输入→生成入口→选择引擎的流程。蓝色取自现有样式，使用本机字体，不加载远程资源。 -->
+<div class="shell" data-screen-label="so 搜索">
+<header class="topbar" data-metric-id="header"><a class="wordmark" href="./index.html" aria-label="so 首页">so</a><button id="themeToggle" data-metric-id="theme" class="theme-toggle" type="button" aria-label="切换到深色"><span class="theme-symbol" aria-hidden="true"></span></button></header>
+<main>
+<div class="search-area">
+<form id="searchForm" data-metric-id="search" class="searchbox" role="search"><span class="search-symbol" aria-hidden="true"></span><input id="searchInput" name="q" aria-label="搜索关键词" aria-describedby="error" placeholder="搜索…" autocomplete="off" enterkeyhint="search"><button id="clearButton" class="clear" type="button" aria-label="清空关键词" hidden><span class="close-symbol" aria-hidden="true"></span></button><button class="submit" type="submit">搜索</button></form>
+<p id="error" class="error" role="alert" hidden></p>
+<div data-metric-id="history" class="under-search"><button class="history-trigger" id="historyTrigger" type="button" aria-expanded="false" aria-controls="historyPanel"><span class="clock" aria-hidden="true"></span>搜索历史</button></div>
+<section id="historyPanel" class="history-panel" aria-label="搜索历史" hidden><div class="history-heading">最近搜索</div><div id="historyList" class="history-list"></div></section>
+</div>
+<section class="results" id="results" aria-label="搜索引擎" hidden><div id="currentSearch" data-metric-id="keyword" class="current-search">当前搜索 <span id="currentKeyword"></span></div><div class="engine-grid" id="engines" data-metric-id="engines"></div></section>
+</main>
+</div>
+<script>
+/**
+ * 安全工具模块
+ * 提供 XSS 防护、HTML 转义、URL 验证等安全功能
+ */
+
+/**
+ * HTML 实体编码表
+ */
+const HTML_ENTITIES = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#x27;',
+  '/': '&#x2F;',
+  '`': '&#x60;',
+  '=': '&#x3D;',
+};
+
+/**
+ * 预编译的 XSS 攻击模式正则表达式
+ * 避免在每次函数调用时重复创建,提升性能
+ */
+const XSS_PATTERNS = [
+  /<script/i,
+  /javascript:/i,
+  /\bon\w+\s*=/i, // onclick=, onload= 等（词边界避免误杀 money=100 这类 on 在词中的查询）
+  /<iframe/i,
+  /<embed/i,
+  /<object/i,
+  /<link/i,
+  /<meta/i,
+  /<style/i,
+  /expression\s*\(/i,
+];
+
+/**
+ * 转义 HTML 特殊字符,防止 XSS 攻击
+ * @param {string} str - 需要转义的字符串
+ * @returns {string} 转义后的字符串
+ */
+function escapeHtml(str) {
+  if (typeof str !== 'string') {
+    return '';
+  }
+
+  return String(str).replace(/[&<>"'`=\/]/g, (char) => HTML_ENTITIES[char] || char);
+}
+
+/**
+ * 转义 HTML 属性值
+ * @param {string} str - 需要转义的属性值
+ * @returns {string} 转义后的字符串
+ */
+function escapeHtmlAttribute(str) {
+  if (typeof str !== 'string') {
+    return '';
+  }
+
+  // 属性值需要转义引号和其他特殊字符
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+/**
+ * JSON 数据岛专用转义：JSON.stringify 不转义 /，
+ * < 需转义为 \u003C 防止字符串值提前闭合 <script> 标签
+ * @param {*} value - 可 JSON 序列化的值
+ * @returns {string} 可安全内联到 <script> 的 JSON 文本
+ */
+function escapeJsonForScript(value) {
+  return JSON.stringify(value).replace(/</g, '\\u003C');
+}
+
+/**
+ * 验证并清理搜索关键词
+ * @param {string} keyword - 搜索关键词
+ * @param {Object} options - 配置选项
+ * @returns {Object} { valid: boolean, cleaned: string, error?: string }
+ */
+function validateAndCleanKeyword(keyword, options = {}) {
+  const {
+    maxLength = 500, // 最大长度限制(默认 500)
+    minLength = 0,   // 最小长度限制(默认 0)
+    allowEmpty = false, // 是否允许空字符串(默认 false)
+  } = options;
+
+  // 如果为 null 或 undefined
+  if (keyword == null) {
+    return {
+      valid: allowEmpty,
+      cleaned: '',
+      error: allowEmpty ? undefined : '搜索关键词不能为空',
+    };
+  }
+
+  // 转换为字符串
+  const str = String(keyword);
+
+  // 检查长度
+  if (str.length > maxLength) {
+    return {
+      valid: false,
+      cleaned: '',
+      error: `搜索关键词长度不能超过 ${maxLength} 个字符`,
+    };
+  }
+
+  if (str.length < minLength) {
+    return {
+      valid: false,
+      cleaned: '',
+      error: `搜索关键词长度不能少于 ${minLength} 个字符`,
+    };
+  }
+
+  // 去除首尾空白
+  const trimmed = str.trim();
+
+  if (!allowEmpty && trimmed.length === 0) {
+    return {
+      valid: false,
+      cleaned: '',
+      error: '搜索关键词不能为空',
+    };
+  }
+
+  // 检测潜在的 XSS 攻击模式
+  // 使用预编译的正则表达式常量,避免重复创建,提升性能
+  for (const pattern of XSS_PATTERNS) {
+    if (pattern.test(trimmed)) {
+      return {
+        valid: false,
+        cleaned: '',
+        error: '搜索关键词包含非法字符',
+      };
+    }
+  }
+
+  return {
+    valid: true,
+    cleaned: trimmed,
+  };
+}
+
+/**
+ * 验证 URL 是否安全
+ * @param {string} url - 需要验证的 URL
+ * @returns {boolean} 是否安全
+ */
+function isValidUrl(url) {
+  if (typeof url !== 'string') {
+    return false;
+  }
+
+  try {
+    const parsed = new URL(url);
+
+    // 只允许 http 和 https 协议
+    // 这已经涵盖了所有危险协议(javascript:, data:, vbscript:, file:, ftp: 等)
+    // 因为它们无法被 URL 构造函数解析为合法的 URL
+    return ['http:', 'https:'].includes(parsed.protocol);
+  } catch (e) {
+    // URL 解析失败,包括:
+    // - 伪协议(javascript:, data:, vbscript: 等)
+    // - 格式错误的 URL
+    return false;
+  }
+}
+
+/**
+ * 安全地编码 URL 参数
+ * @param {string} str - 需要编码的字符串
+ * @returns {string} 编码后的字符串
+ */
+function encodeUrlParam(str) {
+  if (typeof str !== 'string') {
+    return '';
+  }
+
+  // 使用 encodeURIComponent 进行 URL 编码
+  return encodeURIComponent(str);
+}
+
+/**
+ * 生成 CSP 头部值
+ * 本站策略：单文件页面需允许内联脚本/样式，搜索引擎图标需要开放图片来源
+ * @returns {string} CSP 头部值
+ */
+function generateCSP() {
+  return [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline'",
+    "style-src 'self' 'unsafe-inline'",
+    'img-src * data:',
+    "connect-src 'self'",
+    "font-src 'self'",
+    "object-src 'none'",
+    "media-src 'self'",
+    "frame-src 'self'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'", // 防止被嵌入 iframe
+    'upgrade-insecure-requests',
+  ].join('; ');
+}
+
+/**
+ * 生成推荐的安全响应头
+ * @returns {Object} 安全头部对象
+ */
+function getSecurityHeaders() {
+  return {
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
+    'Content-Security-Policy': generateCSP(),
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  };
+}
+
+/**
+ * 验证图标 URL 是否安全
+ * @param {string} iconUrl - 图标 URL
+ * @param {Object} [options={}] - 配置选项(可选)
+ * @param {number} [options.maxDataUriSize=102400] - data URI 最大大小(字节),默认 100KB
+ * @returns {boolean} 是否安全
+ */
+function isValidIconUrl(iconUrl, options = {}) {
+  const {
+    maxDataUriSize = 100 * 1024, // 默认 100KB
+  } = options || {};
+
+  if (!iconUrl || typeof iconUrl !== 'string') {
+    return false;
+  }
+
+  const trimmed = iconUrl.trim();
+
+  // 允许 data:image (base64 图片)
+  if (trimmed.startsWith('data:image/')) {
+    // 限制 data URI 大小(防止 DOS 攻击)
+    if (trimmed.length > maxDataUriSize) {
+      return false;
+    }
+
+    // 验证 data URI 格式
+    return /^data:image\/(png|jpg|jpeg|gif|svg\+xml|ico|webp);base64,[a-zA-Z0-9+/=]+$/i.test(trimmed);
+  }
+
+  // 其他 URL 需要通过标准 URL 验证
+  return isValidUrl(trimmed);
+}
+
+const engines = [{"name":"Google","url":"https://www.google.com/search?q=%s","icon":"../assets/icon-0.ico"},{"name":"DuckDuckGo","url":"https://duckduckgo.com/?q=%s&ia=web","icon":"../assets/icon-1.ico"},{"name":"Bing","url":"https://www.bing.com/search?q=%s","icon":"../assets/icon-2.ico"},{"name":"搜狗","url":"https://www.sogou.com/web?query=%s","icon":"../assets/icon-3.ico"},{"name":"Google V2EX","url":"https://www.google.com/search?q=site:v2ex.com/t%20%s","icon":"../assets/icon-4.ico"},{"name":"SOV2EX","url":"https://www.sov2ex.com/?q=%s&ref=opensearch","icon":"../assets/icon-5.ico"},{"name":"YouTube","url":"https://www.youtube.com/results?search_query=%s","icon":"../assets/icon-6.ico"},{"name":"小红书","url":"https://www.xiaohongshu.com/search_result?keyword=%s&source=web_explore_feed","icon":"../assets/icon-7.ico"},{"name":"哔哩哔哩","url":"https://search.bilibili.com/all?keyword=%s","icon":"../assets/icon-8.ico"},{"name":"AGE","url":"https://www.agedm.io/search?query=%s","icon":"../assets/icon-9.ico"},{"name":"樱花动漫","url":"https://www.yinhuadm.cc/vch/%s.html","icon":"../assets/icon-10.ico"},{"name":"樱之空动漫","url":"https://www.skr2.cc/vodsearch/-------------/?wd=%s","icon":"../assets/icon-11.ico"},{"name":"OmoFun","url":"https://omofun.in/vod/search.html?wd=%s","icon":"../assets/icon-12.ico"},{"name":"豆瓣","url":"https://www.douban.com/search?q=%s","icon":"../assets/icon-13.ico"}];
+const themeToggle = document.querySelector('#themeToggle');
+function updateThemeButton() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  const label = dark ? '切换到浅色' : '切换到深色';
+  themeToggle.setAttribute('aria-label', label);
+  themeToggle.title = label;
+}
+updateThemeButton();
+themeToggle.onclick = () => {
+  const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = theme;
+  try { localStorage.setItem(themeKey, theme); } catch {}
+  updateThemeButton();
+};
+const input = document.querySelector('#searchInput');
+const panel = document.querySelector('#historyPanel');
+const trigger = document.querySelector('#historyTrigger');
+const historyKey = 'so_review_search_history';
+const maxHistory = 50;
+const maxLength = 500;
+function readHistory(){try{const items=JSON.parse(localStorage.getItem(historyKey)||'[]');return Array.isArray(items)?items.filter(item=>typeof item==='string'&&item.trim()&&validateAndCleanKeyword(item).valid).slice(0,maxHistory):[];}catch{return [];}}
+function writeHistory(items){try{localStorage.setItem(historyKey,JSON.stringify(items));}catch{/* 存储被禁用时仍可搜索。 */}}
+function closeHistory(){panel.hidden=true;trigger.setAttribute('aria-expanded','false');}
+function syncClear(){document.querySelector('#clearButton').hidden=!input.value;document.querySelector('#error').hidden=true;input.removeAttribute('aria-invalid');}
+function render(query,save=false){
+ const result=validateAndCleanKeyword(query,{maxLength,allowEmpty:true});
+ if(!result.valid){const error=document.querySelector('#error');error.textContent=result.error;error.hidden=false;input.setAttribute('aria-invalid','true');return false;}
+ const value=result.cleaned;
+ document.querySelector('#currentKeyword').textContent=value;
+ document.querySelector('#currentSearch').hidden=!value;
+ document.querySelector('#results').hidden=!value;
+ document.title=value?'so · '+value:'so';
+ const grid=document.querySelector('#engines');grid.replaceChildren();
+ if(value){for(const engine of engines){const url=engine.url.replace('%s',encodeURIComponent(value));if(!isValidUrl(url))continue;const link=document.createElement('a');link.className='engine';if(engine.name==='AGE')link.dataset.metricId='icon-example';link.href=url;link.target='_blank';link.rel='noopener noreferrer';const mark=document.createElement('span');mark.className='engine-mark';mark.setAttribute('aria-hidden','true');const icon=document.createElement('img');icon.src=engine.icon;icon.alt='';icon.onerror=()=>{icon.hidden=true;};mark.append(icon);const name=document.createElement('span');name.className='engine-name';name.textContent=engine.name;link.append(mark,name);grid.append(link);}}
+ if(value&&save)writeHistory([value,...readHistory().filter(item=>item!==value)].slice(0,maxHistory));
+ return true;
+}
+function search(){if(!input.value.trim())return;if(!render(input.value,true))return;const url=new URL(location.href);url.searchParams.set('q',input.value.trim());if(url.href!==location.href)history.pushState(null,'',url);closeHistory();}
+function renderHistory(){const list=document.querySelector('#historyList');list.replaceChildren();const items=readHistory();if(!items.length){const empty=document.createElement('div');empty.className='history-empty';empty.textContent='暂无搜索历史';list.append(empty);return;}for(const query of items){const row=document.createElement('div');row.className='history-row';const button=document.createElement('button');button.type='button';button.className='history-query';button.textContent=query;button.onclick=()=>{input.value=query;syncClear();search();input.focus();};const remove=document.createElement('button');remove.type='button';remove.className='history-delete';const close=document.createElement('span');close.className='close-symbol';close.setAttribute('aria-hidden','true');remove.append(close);remove.setAttribute('aria-label','删除历史：'+query);remove.onclick=event=>{event.stopPropagation();writeHistory(readHistory().filter(item=>item!==query));renderHistory();trigger.focus();};row.append(button,remove);list.append(row);}}
+document.querySelector('#searchForm').addEventListener('submit',event=>{event.preventDefault();search();});
+input.addEventListener('input',syncClear);
+document.querySelector('#clearButton').onclick=()=>{input.value='';syncClear();document.querySelector('#currentSearch').hidden=true;input.focus();};
+trigger.onclick=()=>{if(!panel.hidden){closeHistory();return;}renderHistory();panel.hidden=false;trigger.setAttribute('aria-expanded','true');};
+document.addEventListener('click',event=>{if(!panel.contains(event.target)&&!trigger.contains(event.target))closeHistory();});
+document.addEventListener('keydown',event=>{if(event.key==='/'&&event.target.tagName!=='INPUT'){event.preventDefault();input.focus();}if(event.key==='Escape'&&!panel.hidden){closeHistory();trigger.focus();}});
+window.addEventListener('popstate',()=>{input.value=new URL(location.href).searchParams.get('q')||'';syncClear();render(input.value);});
+input.value=new URL(location.href).searchParams.get('q')||'Cloudflare Workers';
+syncClear();render(input.value,!!input.value);
+if(!matchMedia('(pointer:coarse)').matches)input.focus();
+</script>
+</data-overlay></div><script src="./data-overlay.js"></script></body>
+</html>

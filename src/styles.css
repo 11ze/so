@@ -74,6 +74,16 @@ a:focus-visible {
   max-width: 976px;
   margin: 0 auto;
   padding: 0 48px 56px;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+/* 没有关键词时整组居中；提交后回到顶部锚定 */
+.container.is-empty {
+  justify-content: center;
+  padding-bottom: 8px;
 }
 
 .topbar {
@@ -87,7 +97,7 @@ a:focus-visible {
 h1 {
   grid-column: 1;
   justify-self: start;
-  /* 主题按钮 34px 内含 14px 图标，图标左右各 10px；标识补同样的留白，两侧视觉间距一致 */
+  /* 标识左侧留白与搜索图标对齐；主题按钮 44px，内缩不参与这条对齐 */
   padding-left: 10px;
   font-size: 26px;
   font-weight: 650;
@@ -103,9 +113,10 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
   padding: 0;
+  border: 1px solid var(--line);
   border-radius: 8px;
   font-size: 14px;
   line-height: 1;
@@ -321,9 +332,29 @@ input[type="text"]::placeholder {
 }
 
 .history-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   padding: 0 4px 8px;
   font-size: 12px;
   border-bottom: 1px solid var(--line);
+}
+
+.history-clear {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.history-clear:hover {
+  background: var(--hover);
+  color: var(--danger);
 }
 
 .history-list {
@@ -368,8 +399,8 @@ input[type="text"]::placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 44px;
+  height: 44px;
   border-radius: 6px;
   color: var(--muted);
   transition: background-color 0.2s ease, color 0.2s ease;
@@ -398,9 +429,45 @@ input[type="text"]::placeholder {
   font-size: 12px;
 }
 
+.recent-searches {
+  margin-top: 20px;
+}
+
+.recent-searches-heading {
+  margin: 0 0 8px 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.recent-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.recent-chip {
+  max-width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.recent-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .error {
   margin: 6px 0 0;
-  padding-left: 2px;
+  padding-left: 14px;
   font-size: 12px;
   color: var(--danger);
 }
@@ -413,7 +480,7 @@ input[type="text"]::placeholder {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  margin: 16px 0 14px;
+  margin: 16px 0 0;
   padding-left: 10px;
   font-size: 13px;
   color: var(--muted);
@@ -428,12 +495,26 @@ input[type="text"]::placeholder {
 
 .current-search-keyword {
   min-width: 0;
-  color: var(--accent);
+  color: var(--text);
   font-weight: 600;
   overflow-wrap: anywhere;
 }
 
 .button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 14px;
+}
+
+.engine-group-title {
+  margin: 0 0 8px 2px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.engine-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
@@ -497,7 +578,7 @@ input[type="text"]::placeholder {
     margin-top: 2px;
   }
 
-  .button-container {
+  .engine-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
@@ -515,10 +596,8 @@ input[type="text"]::placeholder {
     padding-left: 12px;
   }
 
-  .theme-toggle {
-    width: 40px;
-    height: 40px;
-    font-size: 15px;
+  .recent-chip {
+    height: 44px;
   }
 
   .input-wrapper {
@@ -531,7 +610,7 @@ input[type="text"]::placeholder {
     width: 44px;
   }
 
-  .button-container {
+  .engine-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

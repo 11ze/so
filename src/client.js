@@ -78,8 +78,50 @@ function deleteSearchHistoryItem(query) {
   try {
     localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(filteredHistory));
     renderHistoryDropdown();
+    renderRecentSearches();
   } catch (e) {
     console.error('Failed to delete search history item:', e);
+  }
+}
+
+// 空页把最近 5 条直接露出来；其他地方保持隐藏，只走时钟入口
+function renderRecentSearches() {
+  const box = document.getElementById('recentSearches');
+  const list = document.getElementById('recentList');
+  const container = document.querySelector('.container');
+  if (!box || !list) return;
+
+  const emptyView = container ? container.classList.contains('is-empty') : false;
+  const history = emptyView ? getSearchHistory().slice(0, 5) : [];
+
+  list.replaceChildren();
+  if (history.length === 0) {
+    box.hidden = true;
+    return;
+  }
+
+  for (const query of history) {
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'recent-chip';
+    chip.textContent = query;
+    chip.title = query;
+    list.appendChild(chip);
+  }
+  box.hidden = false;
+}
+
+// 清空历史是破坏性操作：第一次点改成“确认清空”，3 秒后复位
+let clearHistoryArmed = false;
+let clearHistoryTimer = null;
+
+function resetClearHistory() {
+  clearHistoryArmed = false;
+  clearTimeout(clearHistoryTimer);
+  const btn = document.getElementById('clearHistoryBtn');
+  if (btn) {
+    btn.textContent = '清空';
+    btn.setAttribute('aria-label', '清空搜索历史');
   }
 }
 
@@ -89,6 +131,8 @@ function renderHistoryDropdown() {
   if (!historyList) return;
 
   const history = getSearchHistory();
+  const clearBtn = document.getElementById('clearHistoryBtn');
+  if (clearBtn) clearBtn.hidden = history.length === 0;
 
   if (history.length === 0) {
     historyList.innerHTML = '<div class="history-empty">暂无搜索历史</div>';
@@ -140,6 +184,7 @@ function showHistoryDropdown() {
   if (!dropdown || !btn) return;
 
   renderHistoryDropdown();
+  resetClearHistory();
   dropdown.classList.add('show');
   btn.classList.add('active');
   btn.setAttribute('aria-expanded', 'true');
@@ -152,6 +197,7 @@ function hideHistoryDropdown() {
 
   if (!dropdown || !btn) return;
 
+  resetClearHistory();
   dropdown.classList.remove('show');
   btn.classList.remove('active');
   btn.setAttribute('aria-expanded', 'false');
@@ -195,9 +241,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // 初始化清空按钮状态
     toggleClearButton();
+    syncCurrentSearch();
+    renderRecentSearches();
 
     // 监听输入框内容变化
     searchInput.addEventListener("input", toggleClearButton);
+    searchInput.addEventListener("input", syncCurrentSearch);
 
     // 服务端拒绝时留下的提示，用户重新输入后清掉
     const errorDisplay = document.getElementById("error");
@@ -233,6 +282,8 @@ document.addEventListener("DOMContentLoaded", function() {
         e.stopPropagation();
         const query = decodeURIComponent(deleteBtn.dataset.query);
         deleteSearchHistoryItem(query);
+        // 删除后原按钮已销毁，焦点回历史入口，和清空全部一致
+        document.getElementById('historyDropdownBtn').focus();
       } else if (historyItem) {
         const query = decodeURIComponent(historyItem.dataset.query);
         const searchInputEl = document.getElementById(SEARCH_INPUT_ID);
@@ -243,6 +294,38 @@ document.addEventListener("DOMContentLoaded", function() {
           performSearch();
         }
       }
+    });
+
+    // 清空全部历史：二次确认后清掉，面板留在空态
+    document.getElementById('clearHistoryBtn').addEventListener('click', function() {
+      const btn = this;
+      if (!clearHistoryArmed) {
+        clearHistoryArmed = true;
+        btn.textContent = '确认清空';
+        btn.setAttribute('aria-label', '确认清空搜索历史');
+        clearHistoryTimer = setTimeout(resetClearHistory, 3000);
+        return;
+      }
+
+      resetClearHistory();
+      try {
+        localStorage.removeItem(SEARCH_HISTORY_KEY);
+      } catch (e) {
+        console.error('Failed to clear search history:', e);
+      }
+      renderHistoryDropdown();
+      renderRecentSearches();
+      document.getElementById('historyDropdownBtn').focus();
+    });
+
+    // 空页最近搜索：点一下等于重搜
+    document.getElementById('recentList').addEventListener('click', function(e) {
+      const chip = e.target.closest('.recent-chip');
+      if (!chip) return;
+
+      searchInput.value = chip.textContent;
+      toggleClearButton();
+      performSearch();
     });
 
     // 页面加载时，如果搜索框有内容，将其添加到搜索历史
@@ -339,12 +422,19 @@ function renderEmptyState() {
     const currentSearchDisplay = document.getElementById("currentSearchDisplay");
     if (currentSearchDisplay) {
       currentSearchDisplay.style.display = "none";
+      // 空页没有结果，旧关键词必须一起清掉，否则编辑输入框会显示不存在的“当前搜索”
+      const keywordEl = currentSearchDisplay.querySelector(".current-search-keyword");
+      if (keywordEl) keywordEl.textContent = "";
     }
 
     const buttonContainer = document.querySelector(".button-container");
     if (buttonContainer) {
       buttonContainer.innerHTML = "";
     }
+
+    const container = document.querySelector(".container");
+    if (container) container.classList.add("is-empty");
+    renderRecentSearches();
 
     document.title = CONFIG.title;
 
@@ -361,6 +451,17 @@ function clearSearch() {
     if (window.location.search) {
       window.history.replaceState(null, "", "/");
     }
+}
+
+// 输入值等于已提交值时不重复显示当前搜索；编辑后才出现，说明结果对应哪个词
+function syncCurrentSearch() {
+  const display = document.getElementById("currentSearchDisplay");
+  const input = document.getElementById(SEARCH_INPUT_ID);
+  if (!display || !input) return;
+
+  const keywordEl = display.querySelector(".current-search-keyword");
+  const keyword = keywordEl ? keywordEl.textContent.trim() : "";
+  display.style.display = keyword && input.value.trim() !== keyword ? "flex" : "none";
 }
 
 function toggleClearButton() {
@@ -402,6 +503,12 @@ function applySearchPage(doc) {
     document.title = doc.title;
     searchInput.value = serverInput.value;
     toggleClearButton();
+    syncCurrentSearch();
+
+    const container = document.querySelector(".container");
+    if (container) container.classList.remove("is-empty");
+    const recent = document.getElementById("recentSearches");
+    if (recent) recent.hidden = true;
 
     if (!isMobileDevice()) searchInput.focus();
     return true;

@@ -159,4 +159,48 @@ test('主题存储键在模板里单点定义', () => {
   assert(!clientSource.includes("'so_theme'"), 'client.js 不应再硬编码主题键');
 });
 
+// 空态居中靠服务端先打标记；等客户端加类会先闪一下顶部对齐
+test('空页标记为空态，结果页与被拒页不标记', () => {
+  const containerClass = (html) => (html.match(/<div class="container[^"]*"/) || [''])[0];
+  assert(containerClass(result.fetch('')).includes('is-empty'), '空页容器应带 is-empty');
+  assert(!containerClass(result.fetch('正常关键词')).includes('is-empty'), '结果页不应带空态标记');
+  assert(!containerClass(result.fetch('<script>alert(1)</script>')).includes('is-empty'), '被拒页应保持顶部对齐');
+});
+
+// 最近搜索由客户端按 localStorage 渲染，服务端只留容器
+test('空页预置默认隐藏的最近搜索容器', () => {
+  const html = result.fetch('');
+  assert(/id="recentSearches"[^>]*aria-label="最近搜索"[^>]*hidden/.test(html), '应预置可访问且默认隐藏的容器');
+});
+
+test('入口按综合、社区、影音、动漫分组', () => {
+  const html = result.fetch('正常关键词');
+  const sections = [...html.matchAll(/<section class="engine-group"><h2 class="engine-group-title">([^<]+)<\/h2><div class="engine-grid">([\s\S]*?)<\/div><\/section>/g)];
+  const grouped = sections.map(([, title, body]) => [title, [...body.matchAll(/class="button-text">([^<]+)</g)].map(m => m[1])]);
+  const expected = [
+    ['综合', ['Google', 'DuckDuckGo', 'Bing', '搜狗']],
+    ['社区', ['V2EX · Google', 'SOV2EX', '小红书']],
+    ['影音', ['YouTube', '哔哩哔哩', '豆瓣']],
+    ['动漫', ['AGE', '樱花动漫', '樱之空动漫', 'OmoFun']],
+  ];
+  assert(JSON.stringify(grouped) === JSON.stringify(expected), `分组或归属不对：${JSON.stringify(grouped)}`);
+  assert(grouped.flatMap(([, names]) => names).length === 14, '14 个入口都要保留');
+
+  // V2EX 仍用 Google 图标时，和 Google 卡片只差名字；图标必须指向 v2ex.com
+  const community = sections.find(([, title]) => title === '社区');
+  const v2exCard = community ? (community[2].match(/<div class="button">.*?V2EX · Google.*?<\/div>/s) || [''])[0] : '';
+  assert(v2exCard.includes('https://www.v2ex.com/favicon.ico'), 'V2EX 入口应换 v2ex.com 图标');
+});
+
+// 默认隐藏靠服务端内联样式，等客户端判断输入值后再显示，避免首屏闪一下重复行
+test('结果页默认隐藏当前搜索行', () => {
+  const html = result.fetch('正常关键词');
+  assert(/id="currentSearchDisplay"[^>]*style="[^"]*display:\s*none/.test(html), '应默认隐藏当前搜索行');
+});
+
+test('历史面板预置默认隐藏的清空按钮', () => {
+  const html = result.fetch('');
+  assert(/id="clearHistoryBtn"[^>]*hidden/.test(html), '历史面板应有清空入口');
+});
+
 finish('结果页渲染测试完成');
