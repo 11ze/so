@@ -8,6 +8,8 @@
   --accent: #0069ad;
   --danger: #b3261e;
   --radius: 12px;
+  /* 图标按钮统一宽度：主题、历史是同一组控件 */
+  --control-size: 46px;
   --shadow: 0 6px 20px rgba(26, 53, 80, 0.04);
   --shadow-hover: 0 6px 18px rgba(26, 53, 80, 0.06);
   --shadow-pop: 0 12px 32px rgba(26, 53, 80, 0.12);
@@ -91,13 +93,14 @@ a:focus-visible {
   grid-template-columns: 1fr auto;
   align-items: center;
   min-height: 48px;
-  padding: 0 6px;
+  /* 右侧不内缩，主题按钮的右缘与搜索行、内容列对齐 */
+  padding: 0 0 0 6px;
 }
 
 h1 {
   grid-column: 1;
   justify-self: start;
-  /* 标识左侧留白与搜索图标对齐；主题按钮 44px，内缩不参与这条对齐 */
+  /* 标识左侧留白与搜索图标对齐；右侧不再内缩，主题按钮贴内容列 */
   padding-left: 10px;
   font-size: 26px;
   font-weight: 650;
@@ -113,19 +116,20 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: var(--control-size);
+  height: var(--control-size);
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-size: 14px;
   line-height: 1;
-  color: var(--text);
-  transition: background-color 0.2s ease;
+  color: var(--muted);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .theme-toggle:hover {
   background: var(--hover);
+  color: var(--text);
 }
 
 .theme-symbol {
@@ -271,8 +275,8 @@ input[type="text"]::placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 46px;
-  width: 46px;
+  flex: 0 0 var(--control-size);
+  width: var(--control-size);
   padding: 0;
   background: var(--surface);
   border: 1px solid var(--line);
@@ -592,12 +596,16 @@ input[type="text"]::placeholder {
 }
 
 @media (max-width: 480px) {
+  :root {
+    --control-size: 44px;
+  }
+
   .container {
     padding: 0 16px 40px;
   }
 
   .topbar {
-    padding: 0 2px;
+    padding: 0 0 0 2px;
   }
 
   h1 {
@@ -611,11 +619,6 @@ input[type="text"]::placeholder {
   .input-wrapper {
     gap: 6px;
     padding: 6px 6px 6px 12px;
-  }
-
-  .history-dropdown-btn {
-    flex-basis: 44px;
-    width: 44px;
   }
 
   .engine-grid {
