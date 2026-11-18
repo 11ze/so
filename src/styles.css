@@ -549,10 +549,18 @@ input[type="text"]::placeholder {
 }
 
 .button-icon {
-  width: 16px;
-  height: 16px;
-  flex: 0 0 16px;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  padding: 2px;
+  box-sizing: border-box;
+  border-radius: 4px;
   object-fit: contain;
+}
+
+/* 白底 favicon 在深色下最亮，加一层很淡的底片把它收进同一套卡片 */
+:root[data-theme="dark"] .button-icon {
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .button-icon.error {

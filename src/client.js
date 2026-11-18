@@ -8,6 +8,7 @@ const THEME_KEY = document.documentElement.dataset.themeKey;
 const SEARCH_HISTORY_KEY = 'search_history';
 const SEARCH_INPUT_ID = 'searchInput';
 const MOBILE_REGEX = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+const RECENT_SEARCH_LIMIT = 5;
 
 function isMobileDevice() {
   return MOBILE_REGEX.test(navigator.userAgent);
@@ -92,7 +93,7 @@ function renderRecentSearches() {
   if (!box || !list) return;
 
   const emptyView = container ? container.classList.contains('is-empty') : false;
-  const history = emptyView ? getSearchHistory().slice(0, 5) : [];
+  const history = emptyView ? getSearchHistory().slice(0, RECENT_SEARCH_LIMIT) : [];
 
   list.replaceChildren();
   if (history.length === 0) {
@@ -166,8 +167,8 @@ function renderHistoryDropdown() {
     deleteIcon.setAttribute('aria-hidden', 'true');
     deleteBtn.appendChild(deleteIcon);
     deleteBtn.dataset.query = encodeURIComponent(query);
-    deleteBtn.setAttribute('aria-label', '删除此历史记录');
-    deleteBtn.title = '删除此历史记录';
+    deleteBtn.setAttribute('aria-label', `删除历史记录：${query}`);
+    deleteBtn.title = `删除历史记录：${query}`;
 
     itemDiv.appendChild(queryBtn);
     itemDiv.appendChild(deleteBtn);
