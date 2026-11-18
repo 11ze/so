@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "npx wrangler dev",
-    "test": "npm run test:security && npm run test:result",
+    "test": "npm run test:security && npm run test:result && npm run test:ui",
     "test:security": "node src/utils/security.test.js",
-    "test:result": "node --import ./register-text-loader.mjs src/result.test.js"
+    "test:result": "node --import ./register-text-loader.mjs src/result.test.js",
+    "test:ui": "node --import ./register-text-loader.mjs src/ui.test.js"
   },
   "keywords": [
     "search",

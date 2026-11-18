@@ -8,6 +8,8 @@ npm test
 
 **结果**: ✅ 全部通过
 
+`npm test` 现在包含安全、页面渲染和浏览器回归三套。浏览器回归覆盖空态顶部对齐与提示、12 条历史面板、清空回空态、390px 无溢出；需要 Node 22+（内置 WebSocket）和本机 Chrome，Chrome 默认查找 macOS/Linux 常见路径，找不到时设置 `CHROME_PATH`。只跑浏览器回归：`npm run test:ui`。
+
 ---
 
 ## 🌐 现在进行浏览器测试

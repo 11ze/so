@@ -20,6 +20,17 @@ export function test(name, fn) {
   }
 }
 
+export async function testAsync(name, fn) {
+  try {
+    await fn();
+    console.log(`✓ ${name}`);
+  } catch (error) {
+    failedCount++;
+    console.error(`✗ ${name}`);
+    console.error(`  ${error.message}`);
+  }
+}
+
 export function finish(label) {
   console.log(`\n=== ${label} ===`);
   if (failedCount > 0) {

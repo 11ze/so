@@ -57,11 +57,12 @@ so/
 │   ├── styles.css           # 页面样式
 │   ├── client.js            # 客户端脚本（以文本内联）
 │   ├── result.test.js       # 页面渲染测试
+│   ├── ui.test.js           # 浏览器回归测试（需 Node 22+ / Chrome）
 │   ├── config.js            # 搜索引擎配置
 │   └── utils/
 │       ├── security.js      # 安全工具模块
 │       ├── security.test.js # 安全测试
-│       └── test-harness.js  # 自研最小测试框架（两套测试共用）
+│       └── test-harness.js  # 自研最小测试框架（三套测试共用）
 ├── docs/                    # 文档目录（含 adr/）
 ├── text-loader.mjs          # 测试专用文本导入 loader（不参与部署）
 ├── register-text-loader.mjs # 测试入口：注册上面的 loader（不参与部署）
@@ -77,7 +78,7 @@ so/
 npm test
 ```
 
-包含安全与页面渲染两套测试。手动浏览器测试步骤见 [HOW_TO_TEST.md](HOW_TO_TEST.md)。
+包含安全、页面渲染与浏览器回归三套测试。浏览器回归覆盖空态顶部对齐与提示、12 条历史面板、清空回空态、390px 无溢出；需要 Node 22+（内置 WebSocket）和本机 Chrome，Chrome 默认查找 macOS/Linux 常见路径，找不到时用 `CHROME_PATH` 指定。只跑浏览器回归：`npm run test:ui`。手动测试步骤见 [HOW_TO_TEST.md](HOW_TO_TEST.md)。
 
 ### 自定义搜索引擎
 
