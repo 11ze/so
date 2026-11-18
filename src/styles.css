@@ -82,10 +82,37 @@ a:focus-visible {
   min-height: 100svh;
 }
 
-/* 没有关键词时整组居中；提交后回到顶部锚定 */
+/* 空态保持顶部对齐；中部提示由 .is-empty 显示，入口页不占位 */
 .container.is-empty {
+  padding-bottom: 0;
+}
+
+.empty-hint {
+  display: none;
+}
+
+.container.is-empty .empty-hint {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  padding-bottom: 8px;
+  gap: 8px;
+  padding: 24px 12px;
+  text-align: center;
+}
+
+.empty-hint-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.empty-hint-sub {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
 }
 
 .topbar {
@@ -362,8 +389,10 @@ input[type="text"]::placeholder {
 }
 
 .history-list {
-  max-height: 240px;
+  max-height: 480px;
+  max-height: min(60svh, 480px);
   overflow-y: auto;
+  overscroll-behavior: contain;
   padding-top: 4px;
 }
 
@@ -431,42 +460,6 @@ input[type="text"]::placeholder {
   text-align: center;
   color: var(--muted);
   font-size: 12px;
-}
-
-.recent-searches {
-  margin-top: 20px;
-}
-
-.recent-searches-heading {
-  margin: 0 0 8px 2px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.recent-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.recent-chip {
-  max-width: 100%;
-  height: 36px;
-  padding: 0 12px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text);
-  font-size: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: border-color 0.15s ease, color 0.15s ease;
-}
-
-.recent-chip:hover {
-  border-color: var(--accent);
-  color: var(--accent);
 }
 
 .error {
@@ -610,10 +603,6 @@ input[type="text"]::placeholder {
 
   h1 {
     padding-left: 12px;
-  }
-
-  .recent-chip {
-    height: 44px;
   }
 
   .input-wrapper {

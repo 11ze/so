@@ -39,15 +39,15 @@
                 </div>
                 <button type="button" id="historyDropdownBtn" class="history-dropdown-btn" title="搜索历史" aria-label="搜索历史" aria-controls="historyDropdown" aria-expanded="false"><span class="clock" aria-hidden="true"></span></button>
                 <div id="historyDropdown" class="history-dropdown">
-                  <div class="history-heading"><span>最近搜索</span><button type="button" id="clearHistoryBtn" class="history-clear" aria-live="polite" hidden>清空</button></div>
+                  <div class="history-heading"><span>搜索历史</span><button type="button" id="clearHistoryBtn" class="history-clear" aria-live="polite" hidden>清空</button></div>
                   <div id="historyList" class="history-list"></div>
                 </div>
               </form>
             </div>
         </div>
-        <section id="recentSearches" class="recent-searches" aria-label="最近搜索" hidden>
-            <div class="recent-searches-heading">最近搜索</div>
-            <div id="recentList" class="recent-list"></div>
+        <section class="empty-hint" aria-label="搜索提示">
+            <p class="empty-hint-title">从一个关键词开始</p>
+            <p class="empty-hint-sub">一次输入，选一个站点继续搜</p>
         </section>
         <p id="error" class="error" role="alert">{{error}}</p>
         <div id="currentSearchDisplay" class="current-search" style="{{current_search_style}}"><span class="current-search-label">当前搜索</span><span class="current-search-keyword">{{current_search}}</span></div>

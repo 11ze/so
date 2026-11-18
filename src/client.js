@@ -8,7 +8,6 @@ const THEME_KEY = document.documentElement.dataset.themeKey;
 const SEARCH_HISTORY_KEY = 'search_history';
 const SEARCH_INPUT_ID = 'searchInput';
 const MOBILE_REGEX = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
-const RECENT_SEARCH_LIMIT = 5;
 
 function isMobileDevice() {
   return MOBILE_REGEX.test(navigator.userAgent);
@@ -79,37 +78,9 @@ function deleteSearchHistoryItem(query) {
   try {
     localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(filteredHistory));
     renderHistoryDropdown();
-    renderRecentSearches();
   } catch (e) {
     console.error('Failed to delete search history item:', e);
   }
-}
-
-// 空页把最近 5 条直接露出来；其他地方保持隐藏，只走时钟入口
-function renderRecentSearches() {
-  const box = document.getElementById('recentSearches');
-  const list = document.getElementById('recentList');
-  const container = document.querySelector('.container');
-  if (!box || !list) return;
-
-  const emptyView = container ? container.classList.contains('is-empty') : false;
-  const history = emptyView ? getSearchHistory().slice(0, RECENT_SEARCH_LIMIT) : [];
-
-  list.replaceChildren();
-  if (history.length === 0) {
-    box.hidden = true;
-    return;
-  }
-
-  for (const query of history) {
-    const chip = document.createElement('button');
-    chip.type = 'button';
-    chip.className = 'recent-chip';
-    chip.textContent = query;
-    chip.title = query;
-    list.appendChild(chip);
-  }
-  box.hidden = false;
 }
 
 // 清空历史是破坏性操作：第一次点改成“确认清空”，3 秒后复位
@@ -243,7 +214,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // 初始化清空按钮状态
     toggleClearButton();
     syncCurrentSearch();
-    renderRecentSearches();
 
     // 监听输入框内容变化
     searchInput.addEventListener("input", toggleClearButton);
@@ -315,18 +285,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.error('Failed to clear search history:', e);
       }
       renderHistoryDropdown();
-      renderRecentSearches();
       document.getElementById('historyDropdownBtn').focus();
-    });
-
-    // 空页最近搜索：点一下等于重搜
-    document.getElementById('recentList').addEventListener('click', function(e) {
-      const chip = e.target.closest('.recent-chip');
-      if (!chip) return;
-
-      searchInput.value = chip.textContent;
-      toggleClearButton();
-      performSearch();
     });
 
     // 页面加载时，如果搜索框有内容，将其添加到搜索历史
@@ -435,7 +394,6 @@ function renderEmptyState() {
 
     const container = document.querySelector(".container");
     if (container) container.classList.add("is-empty");
-    renderRecentSearches();
 
     document.title = CONFIG.title;
 
@@ -508,8 +466,6 @@ function applySearchPage(doc) {
 
     const container = document.querySelector(".container");
     if (container) container.classList.remove("is-empty");
-    const recent = document.getElementById("recentSearches");
-    if (recent) recent.hidden = true;
 
     if (!isMobileDevice()) searchInput.focus();
     return true;

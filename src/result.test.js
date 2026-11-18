@@ -159,7 +159,7 @@ test('主题存储键在模板里单点定义', () => {
   assert(!clientSource.includes("'so_theme'"), 'client.js 不应再硬编码主题键');
 });
 
-// 空态居中靠服务端先打标记；等客户端加类会先闪一下顶部对齐
+// 空态靠服务端先打标记，避免首屏先闪一下带提示的结果页
 test('空页标记为空态，结果页与被拒页不标记', () => {
   const containerClass = (html) => (html.match(/<div class="container[^"]*"/) || [''])[0];
   assert(containerClass(result.fetch('')).includes('is-empty'), '空页容器应带 is-empty');
@@ -167,10 +167,18 @@ test('空页标记为空态，结果页与被拒页不标记', () => {
   assert(!containerClass(result.fetch('<script>alert(1)</script>')).includes('is-empty'), '被拒页应保持顶部对齐');
 });
 
-// 最近搜索由客户端按 localStorage 渲染，服务端只留容器
-test('空页预置默认隐藏的最近搜索容器', () => {
-  const html = result.fetch('');
-  assert(/id="recentSearches"[^>]*aria-label="最近搜索"[^>]*hidden/.test(html), '应预置可访问且默认隐藏的容器');
+// 空态提示常驻 DOM，由 .is-empty 控制显隐，客户端换页时无需再插入节点
+test('空页中部有提示，最近搜索已移除', () => {
+  const empty = result.fetch('');
+  assert(empty.includes('class="empty-hint"'), '空页应有中部提示');
+  assert(empty.includes('从一个关键词开始'), '提示主文案应存在');
+  assert(empty.includes('一次输入，选一个站点继续搜'), '提示副文案应存在');
+  assert(!empty.includes('recentSearches'), '空页不应再渲染最近搜索容器');
+  assert(!clientSource.includes('renderRecentSearches'), '客户端不应再有最近搜索渲染逻辑');
+
+  const results = result.fetch('正常关键词');
+  assert(results.includes('class="empty-hint"'), '结果页保留提示节点，供清空后原位显示');
+  assert(!/<div class="container[^"]*is-empty/.test(results), '结果页不应带空态标记');
 });
 
 test('入口按综合、社区、影音、动漫分组', () => {
