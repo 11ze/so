@@ -29,5 +29,3 @@ tmp/
 # Claude Code
 .claude/*local*
 
-# Ryugi artifact workspace (local)
-.ryugi/

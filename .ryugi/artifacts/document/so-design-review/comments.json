@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "threads": [
+    {
+      "id": "iYq_GLrG_t",
+      "anchor": {
+        "blockId": "JV4xxOTX",
+        "quote": "",
+        "ask": "next-step",
+        "choice": "engine-groups",
+        "answer": null
+      },
+      "status": "open",
+      "statusAt": "2026-11-18T06:36:17.344Z",
+      "statusBy": "human",
+      "messages": [
+        {
+          "id": "euVv6Rd1am",
+          "author": "human",
+          "name": "11ze",
+          "avatar": "/api/avatar/gravatar/2491374d03683cd323b28555c076e72de43145f31e2cc3e78815c4540b0d4f4e",
+          "text": "engine-groups",
+          "at": "2026-11-18T06:36:17.344Z"
+        }
+      ]
+    },
+    {
+      "id": "p7JE6_xuRd",
+      "anchor": {
+        "blockId": "JV4xxOTX",
+        "quote": "",
+        "ask": "next-step",
+        "choice": "empty-state",
+        "answer": null
+      },
+      "status": "open",
+      "statusAt": "2026-11-18T06:36:19.514Z",
+      "statusBy": "human",
+      "messages": [
+        {
+          "id": "GFuNwznlp7",
+          "author": "human",
+          "name": "11ze",
+          "avatar": "/api/avatar/gravatar/2491374d03683cd323b28555c076e72de43145f31e2cc3e78815c4540b0d4f4e",
+          "text": "empty-state",
+          "at": "2026-11-18T06:36:19.514Z"
+        }
+      ]
+    },
+    {
+      "id": "_6u0YZy3Va",
+      "anchor": {
+        "blockId": "*",
+        "quote": "",
+        "submit": true,
+        "asks": [
+          "next-step"
+        ]
+      },
+      "status": "open",
+      "statusAt": "2026-11-18T06:36:21.007Z",
+      "statusBy": "human",
+      "messages": [
+        {
+          "id": "0BdCRXKbzM",
+          "author": "human",
+          "name": "11ze",
+          "avatar": "/api/avatar/gravatar/2491374d03683cd323b28555c076e72de43145f31e2cc3e78815c4540b0d4f4e",
+          "text": "Submitted the answers",
+          "at": "2026-11-18T06:36:21.007Z"
+        }
+      ]
+    },
+    {
+      "id": "sG3lqWnK4H",
+      "anchor": {
+        "blockId": "JV4xxOTX",
+        "quote": "",
+        "ask": "next-step",
+        "note": true
+      },
+      "status": "open",
+      "statusAt": "2026-11-18T06:51:20.635Z",
+      "statusBy": "agent",
+      "messages": [
+        {
+          "id": "mYtIbI7cic",
+          "author": "agent",
+          "text": "已落地：空态整组居中，搜索框下列出最近 5 条（点击重搜，删除同步），无历史时不显示标题；清空与后退都回到该状态。clean.html 与 src/ 已同步；其余三份原型已归档到 designs/so/archive/。",
+          "at": "2026-11-18T06:51:20.635Z",
+          "editedAt": "2026-11-18T07:24:12.108Z"
+        }
+      ]
+    }
+  ]
+}

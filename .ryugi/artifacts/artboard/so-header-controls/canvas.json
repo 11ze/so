@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "title": "右上角图标按钮",
+  "activePage": "header",
+  "pages": [
+    {
+      "id": "header",
+      "name": "右上角按钮"
+    }
+  ],
+  "boards": {
+    "current": {
+      "file": "pages/header/current.html",
+      "page": "header",
+      "x": 0,
+      "y": 0,
+      "w": 960,
+      "h": 382,
+      "title": "现状"
+    },
+    "unify": {
+      "file": "pages/header/unify.html",
+      "page": "header",
+      "x": 1040,
+      "y": 0,
+      "w": 960,
+      "h": 382,
+      "title": "方案一 同规格右对齐（推荐）"
+    },
+    "align": {
+      "file": "pages/header/align.html",
+      "page": "header",
+      "x": 0,
+      "y": 542,
+      "w": 960,
+      "h": 382,
+      "title": "方案二 只对齐右缘"
+    },
+    "inline": {
+      "file": "pages/header/inline.html",
+      "page": "header",
+      "x": 1040,
+      "y": 542,
+      "w": 960,
+      "h": 382,
+      "title": "方案三 并入搜索行"
+    }
+  },
+  "groups": {
+    "pick": {
+      "title": "右上角用哪套规则？",
+      "boards": [
+        "current",
+        "unify",
+        "align",
+        "inline"
+      ],
+      "choose": true,
+      "recommend": "unify"
+    }
+  },
+  "notes": {
+    "title": {
+      "kind": "title",
+      "page": "header",
+      "x": 0,
+      "y": -340,
+      "text": "右上角这组按钮"
+    },
+    "diag": {
+      "kind": "sticky",
+      "page": "header",
+      "x": 1040,
+      "y": -340,
+      "w": 980,
+      "text": "现状（1211 宽 · 结果页）：主题 44×44 · r8 · 右缘 1039.5；历史 46×50 · r12 · 右缘 1045.5。宽度差 2、高度差 6、圆角 8 vs 12、右缘差 6px，图标一深一浅 —— 所以右上角像两套东西。方案一把这四处补齐；方案二只挪右缘；方案三把主题并进搜索行。"
+    }
+  },
+  "focus": {
+    "target": "pick",
+    "at": "2026-11-18T07:55:10Z"
+  }
+}

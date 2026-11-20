@@ -1,0 +1,19 @@
+config.json
+artifacts/*
+!artifacts/document/
+artifacts/document/*/.artifact-id
+
+# 原型与画板源码；其余 artifact 与本机状态仍忽略。
+!artifacts/html/
+artifacts/html/*
+!artifacts/html/so-top-spacing/
+artifacts/html/so-top-spacing/*
+!artifacts/html/so-top-spacing/index.html
+
+!artifacts/artboard/
+artifacts/artboard/*
+!artifacts/artboard/so-header-controls/
+artifacts/artboard/so-header-controls/*
+!artifacts/artboard/so-header-controls/canvas.json
+!artifacts/artboard/so-header-controls/comments.json
+!artifacts/artboard/so-header-controls/pages/

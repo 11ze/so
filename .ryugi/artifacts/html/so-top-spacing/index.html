@@ -1,0 +1,612 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>so · 顶部留白</title>
+<style>
+  :root {
+    --ui-bg: #f1f3f6;
+    --ui-card: #ffffff;
+    --ui-ink: #16232e;
+    --ui-muted: #5d6d7c;
+    --ui-faint: #8a97a4;
+    --ui-line: #dde3ea;
+    --ui-accent: #0069ad;
+    --ui-accent-soft: #eaf4fb;
+    --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Noto Sans SC", "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ui-bg);
+    color: var(--ui-ink);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 44px 32px 72px;
+  }
+
+  .kicker {
+    margin: 0;
+    font: 11.5px/1.4 var(--mono);
+    letter-spacing: 0.12em;
+    color: var(--ui-faint);
+  }
+
+  h1 {
+    margin: 10px 0 10px;
+    font-size: 30px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .lede {
+    max-width: 62ch;
+    margin: 0;
+    color: var(--ui-muted);
+    font-size: 14.5px;
+    line-height: 1.75;
+  }
+
+  .lede b { color: var(--ui-ink); font-weight: 600; }
+
+  /* ---------- 控件 ---------- */
+
+  .panel {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 16px 26px;
+    margin-top: 24px;
+    padding: 16px 18px;
+    background: var(--ui-card);
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    box-shadow: 0 1px 2px rgba(22, 35, 46, 0.04);
+  }
+
+  .field { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+  .field.grow { flex: 1 1 280px; }
+
+  .field-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12px;
+    color: var(--ui-muted);
+  }
+
+  .field-label output {
+    font: 600 13px var(--mono);
+    color: var(--ui-ink);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .seg {
+    display: inline-flex;
+    gap: 2px;
+    padding: 3px;
+    background: #f1f3f6;
+    border-radius: 10px;
+  }
+
+  .seg label { position: relative; display: block; }
+  .seg input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  .seg span {
+    display: block;
+    padding: 6px 11px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--ui-muted);
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  .seg input:checked + span {
+    background: #fff;
+    color: var(--ui-ink);
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(22, 35, 46, 0.12);
+  }
+
+  .seg input:focus-visible + span { outline: 2px solid var(--ui-accent); outline-offset: 1px; }
+
+  input[type="range"] {
+    width: 100%;
+    margin: 2px 0 0;
+    accent-color: var(--ui-accent);
+    cursor: pointer;
+  }
+
+  .presets { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .presets button {
+    padding: 8px 11px;
+    font: 13px/1 var(--sans);
+    color: var(--ui-ink);
+    background: #fff;
+    border: 1px solid var(--ui-line);
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+
+  .presets button:hover { background: #f7f9fb; }
+
+  .presets button[aria-pressed="true"] {
+    border-color: var(--ui-accent);
+    background: var(--ui-accent-soft);
+    color: var(--ui-accent);
+    font-weight: 600;
+  }
+
+  .presets button:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 2px; }
+
+  /* ---------- 读数 ---------- */
+
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .metric {
+    padding: 11px 14px 12px;
+    background: var(--ui-card);
+    border: 1px solid var(--ui-line);
+    border-radius: 12px;
+  }
+
+  .metric span { display: block; font-size: 12px; color: var(--ui-muted); }
+
+  .metric strong {
+    font: 600 22px/1.35 var(--mono);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .metric em { font-style: normal; font-size: 12px; color: var(--ui-faint); margin-left: 1px; }
+
+  .metric small { margin-left: 6px; font-size: 11.5px; color: var(--ui-faint); }
+
+  /* ---------- 预览 ---------- */
+
+  .stages-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 30px 0 12px;
+    font-size: 12px;
+    color: var(--ui-muted);
+  }
+
+  .stages-head h2 { margin: 0; font-size: 13px; font-weight: 600; color: var(--ui-ink); }
+  .stages-head .meta { font-family: var(--mono); font-size: 11.5px; color: var(--ui-faint); }
+
+  .stages { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+
+  .stages[data-width="narrow"] {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .stage-block { display: flex; flex-direction: column; gap: 8px; }
+
+  .stage-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--ui-muted);
+  }
+
+  .stage-head strong { font-weight: 600; color: var(--ui-ink); }
+
+  .stage {
+    position: relative;
+    width: var(--stage-w);
+    height: 240px;
+    overflow: hidden;
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+    box-shadow: 0 10px 28px rgba(22, 35, 46, 0.06);
+  }
+
+  /* ---------- so 页面（与 src/styles.css 同步） ---------- */
+
+  .so-page {
+    --control: 46px;
+    --logo-pl: 10px;
+    --topbar-pl: 6px;
+    --search-mt: 4px;
+    --input-pl: 14px;
+    width: var(--content-w);
+    margin: 0 auto;
+    padding-top: var(--pad);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .stage.light {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --text: #1a3550;
+    --muted: #466a88;
+    --line: #dde6ee;
+    --accent: #0069ad;
+    --radius: 12px;
+    --shadow: 0 6px 20px rgba(26, 53, 80, 0.04);
+    --ring: 0 0 0 3px rgba(12, 135, 214, 0.08);
+    background: var(--bg);
+  }
+
+  .stage.dark {
+    --bg: #101923;
+    --surface: #172330;
+    --text: #e5edf5;
+    --muted: #a1b6c9;
+    --line: #2a3c4e;
+    --accent: #78bef0;
+    --radius: 12px;
+    --shadow: 0 6px 20px rgba(0, 0, 0, 0.24);
+    --ring: 0 0 0 3px rgba(120, 190, 240, 0.16);
+    background: var(--bg);
+  }
+
+  .topbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 0 0 var(--topbar-pl);
+  }
+
+  .so-logo {
+    justify-self: start;
+    padding-left: var(--logo-pl);
+    font-size: 26px;
+    font-weight: 650;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    color: var(--accent);
+    user-select: none;
+  }
+
+  .theme-btn,
+  .history-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--control);
+    height: var(--control);
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--muted);
+  }
+
+  .theme-btn { justify-self: end; }
+
+  .theme-symbol {
+    width: 1em;
+    height: 1em;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    background: linear-gradient(90deg, currentColor 50%, transparent 50%);
+  }
+
+  .search-container { margin-top: var(--search-mt); }
+
+  .search-row { display: flex; align-items: stretch; gap: 8px; }
+
+  .input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    padding: 6px 6px 6px var(--input-pl);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+  }
+
+  .input-wrapper.is-focused { border-color: var(--accent); box-shadow: var(--ring); }
+
+  .search-symbol {
+    position: relative;
+    flex: 0 0 1em;
+    width: 1em;
+    height: 1em;
+    margin-right: 2px;
+    font-size: 14px;
+    color: var(--accent);
+  }
+
+  .search-symbol::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0.72em;
+    height: 0.72em;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+  }
+
+  .search-symbol::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: 0.16em;
+    width: 0.4em;
+    height: 1.5px;
+    border-radius: 1px;
+    background: currentColor;
+    transform: rotate(45deg);
+  }
+
+  .fake-input {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+    height: 36px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  .history-btn {
+    flex: 0 0 var(--control);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+
+  .clock {
+    position: relative;
+    flex: 0 0 1em;
+    width: 1em;
+    height: 1em;
+    font-size: 15px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+  }
+
+  .clock::after {
+    content: "";
+    position: absolute;
+    left: 0.4em;
+    top: 0.13em;
+    width: 0.22em;
+    height: 0.35em;
+    border-left: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .stages[data-width="narrow"] .so-page {
+    --control: 44px;
+    --logo-pl: 12px;
+    --topbar-pl: 2px;
+    --search-mt: 2px;
+    --input-pl: 12px;
+  }
+
+  /* ---------- 结论 ---------- */
+
+  .notice {
+    margin-top: 30px;
+    padding: 16px 18px 18px;
+    background: var(--ui-card);
+    border: 1px solid var(--ui-line);
+    border-radius: 14px;
+  }
+
+  .notice h2 { margin: 0 0 6px; font-size: 13px; font-weight: 600; }
+  .notice p { margin: 0; font-size: 13.5px; color: var(--ui-muted); }
+  .notice p + p { margin-top: 6px; }
+  .notice b { color: var(--ui-ink); font-weight: 600; }
+
+  pre {
+    margin: 14px 0 0;
+    padding: 12px 14px;
+    overflow-x: auto;
+    background: #0f1b26;
+    color: #dbe7f2;
+    border-radius: 10px;
+    font: 12.5px/1.75 var(--mono);
+  }
+
+  pre .c { color: #7f96ab; }
+
+  @media (max-width: 760px) {
+    .wrap { padding: 32px 18px 56px; }
+    .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .stages-head { flex-direction: column; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="kicker">so · 空态页头</p>
+    <h1>顶部留白</h1>
+    <p class="lede">改前页头贴顶：主题按钮离视口顶部只有 <b>1px</b>，和下面的历史按钮只隔 <b>5px</b>。现已按推荐值改为桌面 <b>24px</b>、窄屏 <b>16px</b>；拖一下仍可对比其他值。</p>
+  </header>
+
+  <section class="panel" aria-label="预览设置">
+    <div class="field">
+      <span class="field-label">预览宽度</span>
+      <div class="seg" role="radiogroup" aria-label="预览宽度">
+        <label><input type="radio" name="stage-width" id="w-desktop" value="desktop" checked><span>桌面</span></label>
+        <label><input type="radio" name="stage-width" id="w-narrow" value="narrow"><span>窄屏 390</span></label>
+      </div>
+    </div>
+
+    <div class="field grow">
+      <label class="field-label" for="toppad">顶部留白 <output id="toppadOut" for="toppad">24 px</output></label>
+      <input type="range" id="toppad" min="0" max="40" step="1" value="24">
+    </div>
+
+    <div class="field">
+      <span class="field-label">常用值</span>
+      <div class="presets">
+        <button type="button" data-pad="0" aria-pressed="false">改前 0</button>
+        <button type="button" data-pad="16" aria-pressed="false">16</button>
+        <button type="button" data-pad="24" aria-pressed="true">24 · 推荐</button>
+        <button type="button" data-pad="32" aria-pressed="false">32</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="metrics" aria-live="polite">
+    <div class="metric"><span>顶部留白</span><strong id="mPad">24</strong><em>px</em></div>
+    <div class="metric"><span>按钮离顶</span><strong id="mBtn">25</strong><em>px</em></div>
+    <div class="metric"><span>按钮间距</span><strong id="mGap">5</strong><em>px</em><small>不变</small></div>
+    <div class="metric"><span>搜索框顶</span><strong id="mSearch">76</strong><em>px</em></div>
+  </section>
+
+  <div class="stages-head">
+    <h2>两种主题</h2>
+    <span class="meta" id="stageMeta">桌面 · 内容列 880px · 顶部裁切 240px</span>
+  </div>
+
+  <section class="stages" id="stages" data-width="desktop" style="--pad: 24px; --stage-w: 928px; --content-w: 880px;">
+    <div class="stage-block">
+      <div class="stage-head"><strong>浅色</strong><span>#f8fafc</span></div>
+      <div class="stage light">
+        <div class="so-page">
+          <header class="topbar">
+            <span class="so-logo">so</span>
+            <span class="theme-btn" aria-hidden="true"><span class="theme-symbol"></span></span>
+          </header>
+          <div class="search-container">
+            <div class="search-row">
+              <div class="input-wrapper is-focused">
+                <span class="search-symbol" aria-hidden="true"></span>
+                <span class="fake-input">输入后回车搜索</span>
+              </div>
+              <span class="history-btn" aria-hidden="true"><span class="clock"></span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-block">
+      <div class="stage-head"><strong>深色</strong><span>#101923</span></div>
+      <div class="stage dark">
+        <div class="so-page">
+          <header class="topbar">
+            <span class="so-logo">so</span>
+            <span class="theme-btn" aria-hidden="true"><span class="theme-symbol"></span></span>
+          </header>
+          <div class="search-container">
+            <div class="search-row">
+              <div class="input-wrapper is-focused">
+                <span class="search-symbol" aria-hidden="true"></span>
+                <span class="fake-input">输入后回车搜索</span>
+              </div>
+              <span class="history-btn" aria-hidden="true"><span class="clock"></span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="notice">
+    <h2>已采用</h2>
+    <p><b>桌面 24px，窄屏 16px。</b>空态仍然顶部对齐，按钮离顶从 1px 变成 25px；搜索框从 52px 落到 76px，中部提示跟着下移，仍落在空白区中间。</p>
+    <p>已改 <b>.container</b> 的 padding-top（三个断点），<b>ui.test.js</b> 的断言改为 24/16，设计稿 <b>designs/so/clean.html</b> 与预览图已同步。</p>
+    <pre>.container              { padding: 24px 48px 56px; }   <span class="c">/* 原 0 48 56 */</span>
+@media (max-width: 700px) { .container { padding: 24px 24px 40px; } }
+@media (max-width: 480px) { .container { padding: 16px 16px 40px; } }</pre>
+  </section>
+</main>
+
+<script>
+  (function () {
+    const stagesEl = document.getElementById('stages');
+    const slider = document.getElementById('toppad');
+    const out = document.getElementById('toppadOut');
+    const meta = document.getElementById('stageMeta');
+    const presets = Array.from(document.querySelectorAll('[data-pad]'));
+    const widthInputs = Array.from(document.querySelectorAll('input[name="stage-width"]'));
+
+    const modes = {
+      desktop: {
+        stage: 928, content: 880, control: 46, offset: 1, searchMt: 4,
+        meta: '桌面 · 内容列 880px · 顶部裁切 240px',
+      },
+      narrow: {
+        stage: 390, content: 358, control: 44, offset: 2, searchMt: 2,
+        meta: '窄屏 · 视口 390px · 顶部裁切 240px',
+      },
+    };
+
+    function mode() {
+      const checked = widthInputs.find(input => input.checked);
+      return checked ? checked.value : 'desktop';
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function render() {
+      const pad = Math.min(40, Math.max(0, Number(slider.value) || 0));
+      const current = modes[mode()];
+      const gap = current.searchMt + (48 - current.control) / 2;
+
+      stagesEl.dataset.width = mode();
+      stagesEl.style.setProperty('--pad', pad + 'px');
+      stagesEl.style.setProperty('--stage-w', current.stage + 'px');
+      stagesEl.style.setProperty('--content-w', current.content + 'px');
+
+      out.textContent = pad + ' px';
+      setText('mPad', pad);
+      setText('mBtn', pad + current.offset);
+      setText('mGap', gap);
+      setText('mSearch', pad + 48 + current.searchMt);
+      meta.textContent = current.meta;
+
+      for (const button of presets) {
+        button.setAttribute('aria-pressed', String(Number(button.dataset.pad) === pad));
+      }
+    }
+
+    slider.addEventListener('input', render);
+    slider.addEventListener('change', render);
+    for (const input of widthInputs) input.addEventListener('change', render);
+    for (const button of presets) {
+      button.addEventListener('click', () => {
+        slider.value = button.dataset.pad;
+        render();
+      });
+    }
+
+    render();
+  })();
+</script>
+</body>
+</html>
